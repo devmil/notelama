@@ -277,29 +277,110 @@
     rest = 0.6;
   }
 
+  // ── Menus ───────────────────────────────────────────────────────────
+  // A Meridian menu under (or above) [anchor], inside the positioned
+  // [container]: 48px rows, a check before the chosen row, arrow keys,
+  // Escape and outside clicks close it and return focus to the anchor.
+  let closeOpenMenu = null;
+  function openMenu(anchor, container, items) {
+    if (closeOpenMenu) closeOpenMenu();
+    const menu = document.createElement("div");
+    menu.className = "menu";
+    menu.setAttribute("role", "menu");
+    const checks = items.some((item) => "checked" in item);
+    const rows = items.map((item) => {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.setAttribute("role", "checked" in item ? "menuitemradio" : "menuitem");
+      if ("checked" in item) row.setAttribute("aria-checked", String(item.checked));
+      const lead = item.icon || (item.checked ? "check" : null);
+      if (checks || item.icon) row.insertAdjacentHTML("beforeend", `<span class="menu-check">${lead ? `<svg class="icon" aria-hidden="true"><use href="#i-${lead}"/></svg>` : ""}</span>`);
+      row.append(item.label);
+      row.addEventListener("click", () => { close(); item.onSelect(); });
+      menu.append(row);
+      return row;
+    });
+    container.append(menu);
+    const box = container.getBoundingClientRect();
+    const at = anchor.getBoundingClientRect();
+    const left = Math.max(4, Math.min(at.left - box.left, box.width - menu.offsetWidth - 4));
+    const below = at.bottom - box.top + 4;
+    const top = below + menu.offsetHeight > box.height - 4 && at.top - box.top - menu.offsetHeight - 4 > 0
+      ? at.top - box.top - menu.offsetHeight - 4
+      : below;
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
+    anchor.setAttribute("aria-expanded", "true");
+    function outside(event) { if (!menu.contains(event.target) && !anchor.contains(event.target)) close(false); }
+    function close(refocus = true) {
+      menu.remove();
+      anchor.setAttribute("aria-expanded", "false");
+      document.removeEventListener("pointerdown", outside, true);
+      closeOpenMenu = null;
+      if (refocus) anchor.focus({ preventScroll: true });
+    }
+    menu.addEventListener("keydown", (event) => {
+      const index = rows.indexOf(document.activeElement);
+      if (event.key === "Escape") { close(); event.stopPropagation(); }
+      else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        rows[(index + (event.key === "ArrowDown" ? 1 : rows.length - 1)) % rows.length].focus();
+      } else if (event.key === "Tab") close();
+      else return;
+      event.preventDefault();
+    });
+    document.addEventListener("pointerdown", outside, true);
+    closeOpenMenu = () => close(false);
+    (rows.find((row) => row.getAttribute("aria-checked") === "true") || rows[0]).focus({ preventScroll: true });
+  }
+
   // ── 01 · The book sketch ────────────────────────────────────────────
+  // Page geometry follows the app: A4 at 600 units across, ruled paper
+  // with 7 mm rules starting one rule from the top edge, squared and dotted
+  // paper at 5 mm, 0.5 pt lines, no margin line.
   function book() {
     const root = $("[data-book]");
     if (!root) return;
     const app = $("[data-sketch-theme]", root);
-    const paper = $("[data-paper]", root);
-    const context = paper.getContext("2d");
-    const ring = $("[data-eraser-ring]", root);
+    const desk = $("[data-desk]", root);
+    const feed = $("[data-feed]", root);
+    const dock = $("[data-dock]", root);
     const saveState = $("[data-save-state]", root);
     const saveText = $("[data-save-text]", root);
-    const pageLabel = $("[data-page-label]", root);
     const undoButton = $("[data-undo]", root);
     const redoButton = $("[data-redo]", root);
     const toolButtons = $$("[data-tool]", root);
+    const presetButtons = $$("[data-slot]", root);
+    const presetScroll = $("[data-preset-scroll]", root);
+    const presets = $("[data-presets]", root);
+    const penGroup = $("[data-pen-group]", root);
+    const eraserGroup = $("[data-eraser-group]", root);
+    const footprintButton = $("[data-footprint]", root);
+    const footprintLabel = $("[data-footprint-label]", root);
+    const settingsButton = $("[data-pen-settings]", root);
+    const penDot = $("[data-pen-dot]", root);
+    const popover = $("[data-ink-popover]", root);
     const swatches = $$("[data-color]", root);
-    const thumbs = $$("[data-page]", root);
+    const fingerButton = $("[data-finger]", root);
+    const MM = 600 / 210;
     const W = 600;
-    const H = 798;
-    const LINE = 32;
-    const TOP = 128;
-    const colors = { pen: "#18304F", pencil: "#444B55", highlighter: "#F4D864" };
+    const H = 297 * MM;
+    const RULE = 7 * MM;
+    const GRID = 5 * MM;
+    const PT = 25.4 / 72 * MM;
+    // The standard pen and the app's default saved pens, in dock order.
+    const slots = {
+      standard: { profile: "uniform", color: "#18304F", width: 1 },
+      pen: { profile: "uniform", color: "#18304F", width: 0.5 },
+      correction: { profile: "pressure", color: "#943A55", width: 1 },
+      pencil: { profile: "pencil", color: "#444B55", width: 0.7 },
+      marker: { profile: "highlighter", color: "#F4D864", width: 8 },
+    };
+    const profileLabel = { uniform: "penTool", pressure: "pressurePen", pencil: "pencilTool", highlighter: "highlighterTool" };
+    const FOOTPRINTS = [2, 5, 10];
     let tool = "pen";
-    let page = 0;
+    let slot = "standard";
+    let footprint = 5;
+    let finger = true;
     let undo = [];
     let redo = [];
     let active = null;
@@ -309,76 +390,89 @@
 
     // Seed content, built once from the deterministic scribble generator.
     const rand = random(7);
-    const ink = (color, width, points, kind = "pen") => ({ tool: kind, color, width, points: points.map(([x, y]) => [x, y, 0.5]) });
+    const ink = (color, width, points, kind = "uniform") => ({ profile: kind, color, width: width * MM, points: points.map(([x, y]) => [x, y, 0.5]) });
     function wobble(cx, cy, rx, ry, turns = 1.08) {
       const points = [];
       for (let a = 0; a <= Math.PI * 2 * turns; a += 0.12) points.push([cx + Math.cos(a - 2.6) * rx * (1 + (rand() - 0.5) * 0.04), cy + Math.sin(a - 2.6) * ry * (1 + (rand() - 0.5) * 0.06)]);
       return points;
     }
-    function text(x, row, width, xHeight, color) {
-      return scribble(rand, x, TOP + LINE * row - 6, width, xHeight).map((points) => ink(color, 2, points));
-    }
+    const words = (x, baseline, width, xHeight, color, mm = 0.5, kind = "uniform") =>
+      scribble(rand, x, baseline - 1, width, xHeight).map((points) => ink(color, mm, points, kind));
+    const line = (n) => RULE * n;
     const first = [
-      ...text(82, 0, 300, 15, "#0B6477"),
-      ink("#0B6477", 2.4, [[80, TOP + 8], [210, TOP + 6], [330, TOP + 9]]),
-      ink("#F4D864", 18, [[86, TOP + LINE * 3 - 12], [400, TOP + LINE * 3 - 13]], "highlighter"),
-      ...text(82, 2, 440, 9, "#18304F"),
-      ...text(82, 3, 400, 9, "#18304F"),
-      ...text(82, 4, 460, 9, "#18304F"),
-      ...text(110, 5, 330, 9, "#18304F"),
-      ink("#943A55", 2.2, wobble(150, TOP + LINE * 5 - 12, 50, 17)),
-      ink("#943A55", 2.2, [[202, TOP + LINE * 5 - 2], [250, TOP + LINE * 7 - 20], [300, TOP + LINE * 7 - 14]]),
-      ink("#943A55", 2.2, [[288, TOP + LINE * 7 - 24], [302, TOP + LINE * 7 - 14], [286, TOP + LINE * 7 - 4]]),
-      ...text(318, 7, 220, 9, "#943A55"),
-      ...text(82, 9, 460, 9, "#18304F"),
-      ...text(82, 10, 300, 9, "#18304F"),
+      ...words(40, line(3), 280, 11, "#0B6477", 0.8),
+      ink("#0B6477", 0.8, [[38, line(3) + 5], [180, line(3) + 3.5], [322, line(3) + 6]]),
+      ink("#F4D864", 4, [[42, line(6) - 4], [330, line(6) - 5]], "highlighter"),
+      ...words(40, line(5), 470, 6.5, "#18304F"),
+      ...words(40, line(6), 430, 6.5, "#18304F"),
+      ...words(40, line(7), 500, 6.5, "#18304F"),
+      ...words(40, line(8), 380, 6.5, "#18304F"),
+      ...words(40, line(10), 270, 6.5, "#18304F"),
+      ink("#943A55", 1, wobble(98, line(10) - 4, 56, 13), "pressure"),
+      ink("#943A55", 1, [[150, line(10) + 4], [196, line(11) + 10], [246, line(12) - 6]], "pressure"),
+      ink("#943A55", 1, [[234, line(12) - 14], [247, line(12) - 6], [236, line(12) + 3]], "pressure"),
+      ...words(262, line(12), 230, 6.5, "#943A55", 1, "pressure"),
+      ...words(40, line(14), 480, 6.5, "#18304F"),
+      ...words(40, line(15), 300, 6.5, "#18304F"),
     ];
+    const box = (x0, y0, x1, y1) => ink("#444B55", 0.7, [[x0, y0], [x1, y0 - 1], [x1 + 1, y1], [x0 - 1, y1 + 1], [x0, y0 - 1]], "pencil");
     const second = [
-      ...text(80, 0, 260, 14, "#18304F"),
-      ink("#444B55", 2, [[100, 230], [260, 228], [262, 330], [98, 332], [100, 228]], "pencil"),
-      ink("#444B55", 2, [[340, 230], [500, 232], [498, 330], [338, 328], [340, 230]], "pencil"),
-      ink("#444B55", 2, [[220, 430], [380, 428], [382, 530], [218, 532], [220, 428]], "pencil"),
-      ink("#0B6477", 2.2, [[180, 334], [210, 380], [262, 426]]),
-      ink("#0B6477", 2.2, [[420, 334], [390, 380], [340, 426]]),
-      ...text(120, 3.6, 120, 8, "#444B55"),
-      ...text(360, 3.6, 120, 8, "#444B55"),
-      ...text(240, 10, 120, 8, "#444B55"),
+      ...words(43, GRID * 4, 260, 11, "#18304F", 0.8),
+      box(GRID * 6, GRID * 10, GRID * 18, GRID * 17),
+      box(GRID * 24, GRID * 10, GRID * 36, GRID * 17),
+      box(GRID * 15, GRID * 24, GRID * 27, GRID * 31),
+      ink("#0B6477", 0.8, [[GRID * 12, GRID * 17], [GRID * 15, GRID * 21], [GRID * 19, GRID * 24]]),
+      ink("#0B6477", 0.8, [[GRID * 30, GRID * 17], [GRID * 27, GRID * 21], [GRID * 23, GRID * 24]]),
+      ...words(GRID * 8, GRID * 14, GRID * 9, 6, "#444B55", 0.7, "pencil"),
+      ...words(GRID * 26, GRID * 14, GRID * 9, 6, "#444B55", 0.7, "pencil"),
+      ...words(GRID * 17, GRID * 28, GRID * 9, 6, "#444B55", 0.7, "pencil"),
     ];
     const third = [
-      ...text(80, 0, 240, 14, "#315FA6"),
-      ...[2, 3, 4, 5].flatMap((row) => [
-        ink("#315FA6", 2, [[86, TOP + LINE * row - 22], [104, TOP + LINE * row - 22], [104, TOP + LINE * row - 4], [86, TOP + LINE * row - 4], [86, TOP + LINE * row - 22]]),
-        ...text(124, row, 200 + rand() * 180, 9, "#18304F"),
-      ]),
-      ink("#315FA6", 2.4, [[88, TOP + LINE * 2 - 13], [94, TOP + LINE * 2 - 7], [108, TOP + LINE * 2 - 26]]),
-      ink("#315FA6", 2.4, [[88, TOP + LINE * 4 - 13], [94, TOP + LINE * 4 - 7], [108, TOP + LINE * 4 - 26]]),
+      ...words(43, GRID * 4, 240, 11, "#315FA6", 0.8),
+      ...[0, 1, 2, 3].flatMap((row) => {
+        const y = GRID * (8 + row * 3);
+        return [
+          ink("#315FA6", 0.6, [[GRID * 3, y - GRID], [GRID * 4, y - GRID], [GRID * 4, y], [GRID * 3, y], [GRID * 3, y - GRID]]),
+          ...words(GRID * 5.5, y, 200 + rand() * 180, 6.5, "#18304F"),
+        ];
+      }),
+      ink("#315FA6", 0.8, [[GRID * 3.1, GRID * 7.6], [GRID * 3.5, GRID * 8.1], [GRID * 4.4, GRID * 6.6]]),
+      ink("#315FA6", 0.8, [[GRID * 3.1, GRID * 13.6], [GRID * 3.5, GRID * 14.1], [GRID * 4.4, GRID * 12.6]]),
     ];
-    const pages = [
-      { paper: "ruled", strokes: first },
-      { paper: "grid", strokes: second },
-      { paper: "dotted", strokes: third },
-    ];
+    const pages = $$("[data-page]", feed).map((element, index) => {
+      const canvas = $("[data-paper]", element);
+      return {
+        element, canvas, context: canvas.getContext("2d"),
+        ring: $("[data-eraser-ring]", element),
+        label: $("[data-page-label]", element),
+        zoom: $("[data-page-zoom]", element),
+        paper: ["ruled", "grid", "dotted"][index],
+        strokes: [first, second, third][index],
+      };
+    });
 
     function drawPaper(target, kind, scale) {
       target.fillStyle = "#FFFFFF";
       target.fillRect(0, 0, W, H);
-      target.lineWidth = 1 / scale;
+      // 0.5 pt lines, never thinner than a device pixel.
+      target.lineWidth = Math.max(0.5 * PT, 1 / scale);
       if (kind === "ruled") {
         target.strokeStyle = "#C9D6E3";
         target.beginPath();
-        for (let y = TOP; y < H - 30; y += LINE) { target.moveTo(0, y); target.lineTo(W, y); }
+        for (let y = RULE; y < H; y += RULE) { target.moveTo(0, y); target.lineTo(W, y); }
         target.stroke();
-        target.strokeStyle = "rgba(148, 58, 85, 0.35)";
-        target.beginPath(); target.moveTo(66, 0); target.lineTo(66, H); target.stroke();
       } else if (kind === "grid") {
         target.strokeStyle = "#E3E7EC";
         target.beginPath();
-        for (let x = 20; x < W; x += 20) { target.moveTo(x, 0); target.lineTo(x, H); }
-        for (let y = 18; y < H; y += 20) { target.moveTo(0, y); target.lineTo(W, y); }
+        for (let y = GRID; y < H; y += GRID) { target.moveTo(0, y); target.lineTo(W, y); }
+        for (let x = GRID; x < W; x += GRID) { target.moveTo(x, 0); target.lineTo(x, H); }
         target.stroke();
       } else {
         target.fillStyle = "#C3CAD2";
-        for (let x = 20; x < W; x += 20) for (let y = 18; y < H; y += 20) target.fillRect(x - 1, y - 1, 2, 2);
+        const r = Math.max(0.5 * PT, 0.6 / scale);
+        for (let y = GRID; y < H; y += GRID) {
+          for (let x = GRID; x < W; x += GRID) { target.beginPath(); target.arc(x, y, r, 0, Math.PI * 2); target.fill(); }
+        }
       }
     }
 
@@ -390,7 +484,7 @@
       target.lineJoin = "round";
       target.strokeStyle = stroke.color;
       target.fillStyle = stroke.color;
-      if (stroke.tool === "highlighter") {
+      if (stroke.profile === "highlighter") {
         target.globalCompositeOperation = "multiply";
         target.globalAlpha = 0.45;
         target.lineCap = "butt";
@@ -399,7 +493,7 @@
         target.beginPath();
         target.arc(points[0][0], points[0][1], stroke.width / 2, 0, Math.PI * 2);
         target.fill();
-      } else if (stroke.pressure) {
+      } else if (stroke.profile === "pressure") {
         for (let i = 1; i < points.length; i += 1) {
           target.lineWidth = stroke.width * (0.45 + points[i][2] * 1.1);
           target.beginPath();
@@ -407,7 +501,7 @@
           target.lineTo(points[i][0], points[i][1]);
           target.stroke();
         }
-      } else if (stroke.tool === "pencil") {
+      } else if (stroke.profile === "pencil") {
         target.globalAlpha = 0.7;
         target.lineWidth = stroke.width * 0.9;
         trace(target, points);
@@ -426,48 +520,88 @@
       target.restore();
     }
 
-    function render() {
-      const scale = paper.width / W;
-      context.setTransform(scale, 0, 0, scale, 0, 0);
-      drawPaper(context, pages[page].paper, scale);
-      pages[page].strokes.forEach((stroke) => drawStroke(context, stroke));
-      if (active && active.stroke) drawStroke(context, active.stroke);
-    }
-
-    function renderThumb(index) {
-      const canvas = $("canvas", thumbs[index]);
-      const target = canvas.getContext("2d");
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      if (canvas.width !== 72 * ratio) { canvas.width = 72 * ratio; canvas.height = 96 * ratio; }
-      const scale = canvas.width / W;
-      target.setTransform(scale, 0, 0, scale, 0, 0);
-      drawPaper(target, pages[index].paper, scale * 2);
-      pages[index].strokes.forEach((stroke) => drawStroke(target, stroke));
+    function render(index) {
+      const page = pages[index];
+      const scale = page.canvas.width / W;
+      page.context.setTransform(scale, 0, 0, scale, 0, 0);
+      drawPaper(page.context, page.paper, scale);
+      page.strokes.forEach((stroke) => drawStroke(page.context, stroke));
+      if (active && active.page === index && active.stroke) drawStroke(page.context, active.stroke);
     }
 
     function resize() {
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      paper.width = Math.round(paper.clientWidth * ratio);
-      paper.height = Math.round(paper.width * (H / W));
-      render();
-    }
-
-    function updateLabels() {
-      pageLabel.textContent = t("pageOf", { page: page + 1, pages: pages.length });
-      saveText.textContent = announced || t(saving ? "saving" : "savedLocally");
-      undoButton.disabled = !undo.length;
-      redoButton.disabled = !redo.length;
-    }
-
-    function showPage(index) {
-      page = index;
-      thumbs.forEach((thumb, i) => thumb.setAttribute("aria-current", i === index ? "true" : "false"));
-      render();
+      pages.forEach((page, index) => {
+        page.canvas.width = Math.round(page.canvas.clientWidth * ratio);
+        page.canvas.height = Math.round(page.canvas.width * (H / W));
+        render(index);
+      });
       updateLabels();
     }
 
-    function changed(index, message = "") {
-      renderThumb(index);
+    // The pen slot glyph from the app's PenPresetPainter, on its 24px grid.
+    function glyph({ profile, color, width }) {
+      const wide = profile === "highlighter";
+      const left = wide ? 8 : 9;
+      const right = wide ? 16 : 15;
+      const nib = {
+        uniform: "M10 10L11 4.5L13 4.5L14 10Z",
+        pressure: "M9.5 10L10.5 6.5L12 3L13.5 6.5L14.5 10Z",
+        pencil: "M11 6.5L12 3.5L13 6.5Z",
+        highlighter: "M9 10L9.5 5.5L15 3.5L15 10Z",
+      }[profile];
+      const bar = Math.min(3, Math.max(1, width * 1.2));
+      return `<svg viewBox="0 0 24 24" aria-hidden="true">`
+        + `<rect x="${left}" y="10" width="${right - left}" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>`
+        + `<rect x="${left}" y="10" width="${right - left}" height="2.5" fill="${color}"/>`
+        + (profile === "pencil" ? `<path d="M9 10L12 3.5L15 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>` : "")
+        + `<path d="${nib}" fill="${color}" stroke="currentColor" stroke-width="0.75" stroke-linejoin="round"/>`
+        + `<line x1="6" y1="22" x2="18" y2="22" stroke="${color}" stroke-width="${bar}" stroke-linecap="round"/></svg>`;
+    }
+    function slotLabel(id) {
+      const { profile, width } = slots[id];
+      const size = new Intl.NumberFormat(currentLanguage, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(width);
+      const summary = `${t(profileLabel[profile])} · ${size} mm`;
+      return id === "standard" ? `${t("standardPen")} · ${summary}` : summary;
+    }
+    function updatePens() {
+      presetButtons.forEach((button) => {
+        const id = button.dataset.slot;
+        button.innerHTML = glyph(slots[id]);
+        button.setAttribute("aria-checked", String(id === slot));
+        button.setAttribute("aria-label", slotLabel(id));
+        button.title = slotLabel(id);
+      });
+      penDot.style.setProperty("--pen", slots[slot].color);
+      swatches.forEach((swatch) => swatch.setAttribute("aria-checked", String(swatch.dataset.color === slots[slot].color)));
+    }
+    function updatePresetEdges() {
+      const before = presetScroll.scrollLeft > 0.5;
+      const after = presetScroll.scrollLeft < presetScroll.scrollWidth - presetScroll.clientWidth - 0.5;
+      presetScroll.classList.toggle("more-before", before);
+      presetScroll.classList.toggle("more-after", after);
+      presets.classList.toggle("more-after", after);
+    }
+    presetScroll.addEventListener("scroll", updatePresetEdges, { passive: true });
+    presetScroll.addEventListener("wheel", (event) => {
+      if (!event.deltaY || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+      presetScroll.scrollLeft += event.deltaY;
+      event.preventDefault();
+    }, { passive: false });
+
+    function updateLabels() {
+      pages.forEach((page, index) => {
+        page.label.textContent = t("pageOf", { page: index + 1, pages: pages.length });
+        page.zoom.textContent = t("zoomLabel", { percent: Math.round((page.canvas.clientWidth / (210 * 72 / 25.4)) * 100) });
+      });
+      saveText.textContent = announced || t(saving ? "saving" : "savedLocally");
+      undoButton.disabled = !undo.length;
+      redoButton.disabled = !redo.length;
+      footprintLabel.textContent = `${footprint} mm`;
+      updatePens();
+    }
+
+    function changed(message = "") {
       saving = true;
       announced = message;
       saveState.classList.add("saving");
@@ -481,6 +615,15 @@
       }, message ? 1600 : 520);
     }
 
+    // Undo and redo follow the book: a change on a page out of view scrolls
+    // the feed to that page.
+    function reveal(index) {
+      const element = pages[index].element;
+      const top = element.offsetTop - feed.offsetTop;
+      const visible = top < feed.scrollTop + feed.clientHeight - 80 && top + element.offsetHeight > feed.scrollTop + 80;
+      if (!visible) feed.scrollTo({ top: top - parseFloat(getComputedStyle(feed).paddingTop) + 8, behavior: reduced.matches ? "auto" : "smooth" });
+      return !visible;
+    }
     function apply(command, forward) {
       const strokes = pages[command.page].strokes;
       const adding = (command.type === "add") === forward;
@@ -489,57 +632,97 @@
       } else {
         command.strokes.slice().sort((a, b) => b.index - a.index).forEach(({ stroke }) => strokes.splice(strokes.indexOf(stroke), 1));
       }
-      const elsewhere = command.page !== page;
-      if (elsewhere) showPage(command.page); else render();
-      changed(command.page, elsewhere ? t(forward ? "redoneOnPage" : "undoneOnPage", { page: command.page + 1 }) : "");
+      render(command.page);
+      const elsewhere = reveal(command.page);
+      changed(elsewhere ? t(forward ? "redoneOnPage" : "undoneOnPage", { page: command.page + 1 }) : "");
     }
-
     function commit(command) {
       undo.push(command);
       if (undo.length > 100) undo.shift();
       redo = [];
-      changed(command.page);
+      changed();
     }
-
     undoButton.addEventListener("click", () => { const command = undo.pop(); if (command) { apply(command, false); redo.push(command); updateLabels(); } });
     redoButton.addEventListener("click", () => { const command = redo.pop(); if (command) { apply(command, true); undo.push(command); updateLabels(); } });
 
+    // While the eraser is the tool, the dock shows its footprint in place
+    // of the pen settings and slots, as the app does.
     function selectTool(next) {
       tool = next;
       toolButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.tool === tool)));
-      swatches.forEach((swatch) => {
-        swatch.setAttribute("aria-checked", String(tool !== "eraser" && swatch.dataset.color === colors[tool]));
-        swatch.disabled = tool === "eraser";
-      });
-      paper.classList.toggle("erasing", tool === "eraser");
+      penGroup.hidden = tool === "eraser";
+      eraserGroup.hidden = tool !== "eraser";
+      if (tool === "eraser") closePopover();
+      pages.forEach((page) => page.canvas.classList.toggle("erasing", tool === "eraser"));
     }
     toolButtons.forEach((button) => button.addEventListener("click", () => selectTool(button.dataset.tool)));
-    swatches.forEach((swatch) => swatch.addEventListener("click", () => {
-      if (tool === "eraser") return;
-      colors[tool] = swatch.dataset.color;
-      selectTool(tool);
+    presetButtons.forEach((button) => button.addEventListener("click", () => {
+      const id = button.dataset.slot;
+      // A tap on the active slot while writing opens its settings.
+      if (id === slot && tool === "pen") { togglePopover(); return; }
+      slot = id;
+      selectTool("pen");
+      updatePens();
     }));
-    $("[data-swatches]", root).addEventListener("keydown", (event) => {
+    footprintButton.addEventListener("click", () => openMenu(footprintButton, desk, FOOTPRINTS.map((size) => ({
+      label: `${size} mm`, checked: size === footprint, onSelect: () => { footprint = size; updateLabels(); },
+    }))));
+
+    function closePopover() { popover.hidden = true; settingsButton.setAttribute("aria-expanded", "false"); }
+    function togglePopover() {
+      const open = popover.hidden;
+      popover.hidden = !open;
+      settingsButton.setAttribute("aria-expanded", String(open));
+      if (open) (swatches.find((swatch) => swatch.getAttribute("aria-checked") === "true") || swatches[0]).focus();
+    }
+    settingsButton.addEventListener("click", togglePopover);
+    swatches.forEach((swatch) => swatch.addEventListener("click", () => { slots[slot].color = swatch.dataset.color; updatePens(); }));
+    popover.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") { closePopover(); settingsButton.focus(); event.stopPropagation(); return; }
       if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
-      const visible = swatches.filter((swatch) => swatch.offsetParent);
-      const index = visible.indexOf(document.activeElement);
+      const index = swatches.indexOf(document.activeElement);
       if (index < 0) return;
-      const next = visible[(index + (event.key === "ArrowRight" ? 1 : visible.length - 1)) % visible.length];
+      const next = swatches[(index + (event.key === "ArrowRight" ? 1 : swatches.length - 1)) % swatches.length];
       next.focus();
       next.click();
       event.preventDefault();
+      event.stopPropagation();
     });
-    thumbs.forEach((thumb, index) => thumb.addEventListener("click", () => showPage(index)));
+    document.addEventListener("pointerdown", (event) => {
+      if (!popover.hidden && !popover.contains(event.target) && !settingsButton.contains(event.target)
+        && !presets.contains(event.target)) closePopover();
+    }, true);
 
-    function point(event) {
-      const box = paper.getBoundingClientRect();
+    // Draw with a finger: off, a finger scrolls the feed and only a pen or
+    // mouse writes.
+    fingerButton.addEventListener("click", () => {
+      finger = !finger;
+      fingerButton.setAttribute("aria-pressed", String(finger));
+      pages.forEach((page) => page.canvas.classList.toggle("pan", !finger));
+    });
+
+    // Arrow keys move along the dock's enabled controls and wrap.
+    dock.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight"].includes(event.key) || popover.contains(event.target)) return;
+      const controls = $$("button", dock).filter((button) => !button.disabled && button.offsetParent && !popover.contains(button));
+      const index = controls.indexOf(document.activeElement);
+      if (index < 0) return;
+      const next = controls[(index + (event.key === "ArrowRight" ? 1 : controls.length - 1)) % controls.length];
+      next.focus();
+      next.scrollIntoView({ block: "nearest", inline: "nearest" });
+      event.preventDefault();
+    });
+
+    function point(page, event) {
+      const box = page.canvas.getBoundingClientRect();
       return [(event.clientX - box.left) * (W / box.width), (event.clientY - box.top) * (H / box.height)];
     }
-    function moveRing(event) {
-      const box = paper.getBoundingClientRect();
-      ring.style.transform = `translate(${event.clientX - box.left}px, ${event.clientY - box.top}px)`;
-      ring.style.width = ring.style.height = `${(28 * box.width) / W * 1.0 + 6}px`;
-      ring.style.margin = `-${parseFloat(ring.style.width) / 2}px 0 0 -${parseFloat(ring.style.width) / 2}px`;
+    function moveRing(page, event) {
+      const box = page.canvas.getBoundingClientRect();
+      const size = (footprint * MM * box.width) / W;
+      page.ring.style.transform = `translate(${event.clientX - box.left}px, ${event.clientY - box.top}px)`;
+      page.ring.style.width = page.ring.style.height = `${size}px`;
+      page.ring.style.margin = `-${size / 2}px 0 0 -${size / 2}px`;
     }
     function nearSegment(px, py, a, b) {
       const dx = b[0] - a[0];
@@ -548,11 +731,11 @@
       const k = length ? Math.max(0, Math.min(1, ((px - a[0]) * dx + (py - a[1]) * dy) / length)) : 0;
       return Math.hypot(px - (a[0] + k * dx), py - (a[1] + k * dy));
     }
-    function erase([x, y]) {
-      const strokes = pages[page].strokes;
+    function erase(index, [x, y]) {
+      const strokes = pages[index].strokes;
       for (let i = strokes.length - 1; i >= 0; i -= 1) {
         const stroke = strokes[i];
-        const reach = 14 + stroke.width / 2;
+        const reach = (footprint * MM) / 2 + stroke.width / 2;
         const points = stroke.points;
         const hit = points.length === 1
           ? Math.hypot(x - points[0][0], y - points[0][1]) < reach
@@ -564,59 +747,61 @@
       }
     }
 
-    paper.addEventListener("pointerdown", (event) => {
-      if (active || event.button > 0) return;
-      try { paper.setPointerCapture(event.pointerId); } catch (_) { /* Capture is best effort. */ }
-      const [x, y] = point(event);
-      if (tool === "eraser") {
-        active = { id: event.pointerId, removed: [] };
-        erase([x, y]);
-        render();
-      } else {
-        const pressure = event.pointerType === "pen" && event.pressure > 0 && event.pressure !== 0.5;
-        const width = tool === "highlighter" ? 18 : tool === "pencil" ? 2.4 : 2.2;
-        active = { id: event.pointerId, stroke: { tool, color: colors[tool], width, pressure, points: [[x, y, event.pressure || 0.5]] } };
-        render();
-      }
-      event.preventDefault();
-    });
-    paper.addEventListener("pointermove", (event) => {
-      if (tool === "eraser") { ring.classList.add("on"); moveRing(event); }
-      if (!active || event.pointerId !== active.id) return;
-      const events = event.getCoalescedEvents ? event.getCoalescedEvents() : [event];
-      for (const sample of events.length ? events : [event]) {
-        const [x, y] = point(sample);
-        if (active.stroke) {
-          const previous = active.stroke.points[active.stroke.points.length - 1];
-          if (Math.hypot(x - previous[0], y - previous[1]) > 0.8) active.stroke.points.push([x, y, sample.pressure || 0.5]);
+    pages.forEach((page, index) => {
+      const { canvas } = page;
+      canvas.addEventListener("pointerdown", (event) => {
+        if (active || event.button > 0) return;
+        if (event.pointerType === "touch" && !finger) return;
+        closePopover();
+        try { canvas.setPointerCapture(event.pointerId); } catch (_) { /* Capture is best effort. */ }
+        const at = point(page, event);
+        if (tool === "eraser") {
+          active = { page: index, id: event.pointerId, removed: [] };
+          erase(index, at);
         } else {
-          erase([x, y]);
+          const pen = slots[slot];
+          active = { page: index, id: event.pointerId, stroke: { profile: pen.profile, color: pen.color, width: pen.width * MM, points: [[...at, event.pressure || 0.5]] } };
         }
+        render(index);
+        event.preventDefault();
+      });
+      canvas.addEventListener("pointermove", (event) => {
+        if (tool === "eraser" && event.pointerType !== "touch") { page.ring.classList.add("on"); moveRing(page, event); }
+        if (!active || active.page !== index || event.pointerId !== active.id) return;
+        const events = event.getCoalescedEvents ? event.getCoalescedEvents() : [event];
+        for (const sample of events.length ? events : [event]) {
+          const [x, y] = point(page, sample);
+          if (active.stroke) {
+            const previous = active.stroke.points[active.stroke.points.length - 1];
+            if (Math.hypot(x - previous[0], y - previous[1]) > 0.8) active.stroke.points.push([x, y, sample.pressure || 0.5]);
+          } else {
+            erase(index, [x, y]);
+          }
+        }
+        render(index);
+      });
+      function finish(event, cancelled) {
+        if (!active || active.page !== index || event.pointerId !== active.id) return;
+        const done = active;
+        active = null;
+        if (done.stroke) {
+          if (!cancelled) {
+            page.strokes.push(done.stroke);
+            commit({ type: "add", page: index, strokes: [{ stroke: done.stroke, index: page.strokes.length - 1 }] });
+          }
+        } else if (done.removed.length) {
+          if (cancelled) {
+            done.removed.slice().reverse().forEach(({ stroke, index: at }) => page.strokes.splice(at, 0, stroke));
+          } else {
+            commit({ type: "erase", page: index, strokes: done.removed });
+          }
+        }
+        render(index);
       }
-      render();
+      canvas.addEventListener("pointerup", (event) => finish(event, false));
+      canvas.addEventListener("pointercancel", (event) => finish(event, true));
+      canvas.addEventListener("pointerleave", () => page.ring.classList.remove("on"));
     });
-    function finish(event, cancelled) {
-      if (!active || event.pointerId !== active.id) return;
-      const done = active;
-      active = null;
-      if (done.stroke) {
-        if (!cancelled) {
-          const strokes = pages[page].strokes;
-          strokes.push(done.stroke);
-          commit({ type: "add", page, strokes: [{ stroke: done.stroke, index: strokes.length - 1 }] });
-        }
-      } else if (done.removed.length) {
-        if (cancelled) {
-          done.removed.slice().reverse().forEach(({ stroke, index }) => pages[page].strokes.splice(index, 0, stroke));
-        } else {
-          commit({ type: "erase", page, strokes: done.removed });
-        }
-      }
-      render();
-    }
-    paper.addEventListener("pointerup", (event) => finish(event, false));
-    paper.addEventListener("pointercancel", (event) => finish(event, true));
-    paper.addEventListener("pointerleave", () => ring.classList.remove("on"));
     root.addEventListener("keydown", (event) => {
       if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "z" || !root.contains(document.activeElement)) return;
       (event.shiftKey ? redoButton : undoButton).click();
@@ -648,13 +833,21 @@
       if (event.key === "Tab") { closer.focus(); event.preventDefault(); }
     });
 
-    new ResizeObserver(resize).observe(paper);
-    pages.forEach((_, index) => renderThumb(index));
+    const observer = new ResizeObserver(() => {
+      desk.style.setProperty("--dock-h", `${dock.offsetHeight}px`);
+      resize();
+      updatePresetEdges();
+    });
+    observer.observe(feed);
+    observer.observe(dock);
     selectTool("pen");
+    updatePens();
     onLocale(updateLabels);
   }
 
   // ── Library ─────────────────────────────────────────────────────────
+  // The app's library: a sort menu (recently opened, last modified, title)
+  // behind an icon that shows the order, and an item menu on each book.
   function library() {
     const root = $("[data-library]");
     if (!root) return;
@@ -663,7 +856,10 @@
     const restore = $("[data-restore]", root);
     const restoreLabel = $("[data-restore-label]", root);
     const status = $("[data-library-status]", root);
-    const sortButtons = $$("[data-sort]", root);
+    const sortButton = $("[data-sort-button]", root);
+    const sortIcon = $("[data-sort-icon]", root);
+    const icons = { recent: "history", modified: "clock", title: "arrow-down-a-z" };
+    const labels = { recent: "sortRecent", modified: "sortModified", title: "sortTitle" };
     const trashed = [];
     let order = "recent";
     let message = null;
@@ -682,12 +878,13 @@
         item.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], { duration: 420, easing: "cubic-bezier(0.2, 0, 0, 1)" });
       });
     }
+    const title = (item) => $(".book-name", item).textContent;
     function sorted() {
-      const items = $$(".book-item", shelf);
-      const title = (item) => $(".cover-title", item).textContent;
-      return items.sort((a, b) => (order === "title"
+      return $$(".book-item", shelf).sort((a, b) => (order === "title"
         ? title(a).localeCompare(title(b), currentLanguage)
-        : Number(a.dataset.recent) - Number(b.dataset.recent)));
+        : order === "modified"
+          ? b.dataset.modified.localeCompare(a.dataset.modified)
+          : Number(a.dataset.recent) - Number(b.dataset.recent)));
     }
     function sort() { flip(() => sorted().forEach((item) => shelf.append(item))); }
     function update() {
@@ -697,35 +894,43 @@
       restore.hidden = trashed.length === 0;
       restoreLabel.textContent = t("restoreBooks", { count: trashed.length });
       status.textContent = message ? t(message.key, message.values) : t("libraryNote");
+      sortIcon.setAttribute("href", `#i-${icons[order]}`);
+      sortButton.title = `${t("sortLabel")}: ${t(labels[order])}`;
+      sortButton.setAttribute("aria-label", sortButton.title);
+      const format = new Intl.DateTimeFormat(currentLanguage, { day: "numeric", month: "short", year: "numeric" });
+      $$(".book-item", root).forEach((item) => {
+        $("[data-book-date]", item).textContent = t("bookModified", { date: format.format(new Date(`${item.dataset.modified}T12:00:00`)) });
+        $("[data-book-menu]", item).setAttribute("aria-label", t("itemActions", { title: title(item) }));
+      });
     }
-    sortButtons.forEach((button) => button.addEventListener("click", () => {
-      order = button.dataset.sort;
-      sortButtons.forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
-      sort();
-    }));
-    shelf.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-trash]");
-      if (!button) return;
-      const item = button.closest(".book-item");
-      const title = $(".cover-title", item).textContent;
+    sortButton.addEventListener("click", () => openMenu(sortButton, root, Object.keys(labels).map((key) => ({
+      label: t(labels[key]), checked: key === order, onSelect: () => { order = key; update(); sort(); },
+    }))));
+    function moveToTrash(item) {
       const next = item.nextElementSibling || item.previousElementSibling;
       const remove = () => {
         flip(() => { item.remove(); item.classList.remove("leaving"); });
         trashed.push(item);
-        message = { key: "movedToTrash", values: { title } };
+        message = { key: "movedToTrash", values: { title: title(item) } };
         update();
-        const focusTarget = next && next.isConnected ? $("[data-trash]", next) : restore;
+        const focusTarget = next && next.isConnected ? $("[data-book-menu]", next) : restore;
         focusTarget.focus({ preventScroll: true });
       };
       if (reduced.matches) remove();
       else { item.classList.add("leaving"); item.addEventListener("animationend", remove, { once: true }); }
+    }
+    shelf.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-book-menu]");
+      if (!button) return;
+      const item = button.closest(".book-item");
+      openMenu(button, root, [{ label: t("moveToTrash"), icon: "trash-2", onSelect: () => moveToTrash(item) }]);
     });
     restore.addEventListener("click", () => {
       trashed.splice(0).forEach((item) => shelf.append(item));
       message = { key: "restored", values: {} };
       update();
       sorted().forEach((item) => shelf.append(item));
-      $("[data-trash]", shelf).focus({ preventScroll: true });
+      $("[data-book-menu]", shelf).focus({ preventScroll: true });
     });
     onLocale(() => { update(); if (order === "title") sorted().forEach((item) => shelf.append(item)); });
   }
@@ -771,6 +976,7 @@
     const paperShape = $("[data-scan-paper]", root);
     const shadow = $("[data-scan-shadow]", root);
     const outline = $("[data-scan-outline]", root);
+    const outlineEdge = $("[data-scan-outline-edge]", root);
     const linesGroup = $("[data-scan-lines]", root);
     const handlesGroup = $("[data-scan-handles]", root);
     const accept = $("[data-scan-accept]", root);
@@ -813,7 +1019,7 @@
       group.setAttribute("tabindex", "0");
       group.setAttribute("role", "button");
       group.dataset.index = index;
-      group.innerHTML = '<circle class="hit" r="22"/><circle class="ring" r="9"/>';
+      group.innerHTML = '<circle class="hit" r="22"/><circle class="ring" r="7"/>';
       handlesGroup.append(group);
       return group;
     });
@@ -839,6 +1045,7 @@
         path.setAttribute("d", `M${mapped.map((p) => p.map((n) => n.toFixed(1)).join(" ")).join("L")}`);
       });
       outline.setAttribute("points", pointsAttr(corners));
+      outlineEdge.setAttribute("points", pointsAttr(corners));
       handles.forEach((handle, i) => handle.setAttribute("transform", `translate(${corners[i][0].toFixed(1)} ${corners[i][1].toFixed(1)})`));
       const valid = convex(corners);
       outline.classList.toggle("invalid", !valid);

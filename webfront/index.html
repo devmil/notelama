@@ -23,16 +23,14 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=fbb6b276c877">
   <link rel="manifest" href="manifest.json?v=1ab2ebc813e4">
   <link rel="preload" href="assets/fonts/Literata-Display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=d50cc5a12090">
+  <link rel="stylesheet" href="styles.css?v=e65abddcc9d0">
   <script>document.documentElement.classList.add("js");</script>
-  <script src="site.js?v=645aad67fbd0" data-locales-version="3dd27c2680d1" defer></script>
+  <script src="site.js?v=7c1bb31e8251" data-locales-version="d9de96ee4395" defer></script>
 </head>
 <body>
   <!-- Icons: Lucide (lucide-static 1.37.0, ISC), the set Meridian ships in the app. -->
   <svg class="icon-sprite" aria-hidden="true" focusable="false">
     <symbol id="i-pen-line" viewBox="0 0 24 24"><path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></symbol>
-    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
-    <symbol id="i-highlighter" viewBox="0 0 24 24"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></symbol>
     <symbol id="i-eraser" viewBox="0 0 24 24"><path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21"/><path d="m5.082 11.09 8.828 8.828"/></symbol>
     <symbol id="i-undo-2" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></symbol>
     <symbol id="i-redo-2" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/></symbol>
@@ -63,9 +61,22 @@
     <symbol id="i-graduation-cap" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
     <symbol id="i-ellipsis" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
-    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
     <symbol id="i-archive-restore" viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h2"/><path d="M20 8v11a2 2 0 0 1-2 2h-2"/><path d="m9 15 3-3 3 3"/><path d="M12 12v9"/></symbol>
     <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+    <symbol id="i-layout-grid" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></symbol>
+    <symbol id="i-file-plus" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M9 15h6"/><path d="M12 18v-6"/></symbol>
+    <symbol id="i-gallery-horizontal" viewBox="0 0 24 24"><path d="M2 3v18"/><rect width="12" height="18" x="6" y="3" rx="2"/><path d="M22 3v18"/></symbol>
+    <symbol id="i-ellipsis-vertical" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></symbol>
+    <symbol id="i-maximize-2" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></symbol>
+    <symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></symbol>
+    <symbol id="i-pointer" viewBox="0 0 24 24"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+    <symbol id="i-arrow-down-a-z" viewBox="0 0 24 24"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M20 8h-5"/><path d="M15 10V6.5a2.5 2.5 0 0 1 5 0V10"/><path d="M15 14h5l-5 6h5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
   </svg>
 
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
@@ -145,37 +156,69 @@
       <figure class="tablet-figure reveal" data-book>
         <div class="tablet">
           <div class="app" data-sketch-theme>
+            <!-- Mirrors the app's book screen: NoteLamaAppBar, the floating
+                 MeridianToolDock and the vertical page feed with a PageHeader
+                 above each page. Sizes and colours follow Meridian's nibluma
+                 brand at touch density. -->
             <div class="app-bar">
-              <span class="app-icon-button" aria-hidden="true"><svg class="icon"><use href="#i-chevron-left"/></svg></span>
+              <span class="icon-button" aria-hidden="true"><svg class="icon"><use href="#i-arrow-left"/></svg></span>
               <div class="app-title">
                 <strong class="book-title" data-i18n="bookTitle">Field notes</strong>
-                <small class="save-state" data-save-state role="status"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-save-text data-i18n="savedLocally">Saved on this device</span></small>
+                <small class="save-state" data-save-state role="status"><span data-save-text>Saved on this device</span> · <span data-i18n="syncOff">Sync is off</span></small>
               </div>
-              <span class="app-icon-button" aria-hidden="true"><svg class="icon"><use href="#i-plus"/></svg></span>
-              <span class="app-icon-button" aria-hidden="true"><svg class="icon"><use href="#i-ellipsis"/></svg></span>
-              <button class="app-icon-button signature-button" type="button" data-about-open title="About NoteLama" data-i18n-label="aboutOpen">
+              <span class="app-actions" aria-hidden="true">
+                <span class="icon-button wide-only"><svg class="icon"><use href="#i-layout-grid"/></svg></span>
+                <span class="icon-button"><svg class="icon"><use href="#i-file-plus"/></svg></span>
+                <span class="icon-button wide-only"><svg class="icon"><use href="#i-gallery-horizontal"/></svg></span>
+                <span class="icon-button wide-only"><svg class="icon"><use href="#i-image-plus"/></svg></span>
+                <span class="icon-button"><svg class="icon"><use href="#i-ellipsis-vertical"/></svg></span>
+                <span class="icon-button wide-only"><svg class="icon"><use href="#i-archive-restore"/></svg></span>
+              </span>
+              <button class="icon-button signature-button" type="button" data-about-open title="About NoteLama" data-i18n-label="aboutOpen">
                 <span class="signature" aria-hidden="true"></span>
               </button>
             </div>
-            <div class="app-body">
-              <ol class="thumbs" aria-label="Pages" data-i18n-label="pagesLabel" data-thumbs>
-                <li><button type="button" class="thumb" data-page="0" aria-current="true"><canvas width="72" height="96" aria-hidden="true"></canvas><span>1</span></button></li>
-                <li><button type="button" class="thumb" data-page="1"><canvas width="72" height="96" aria-hidden="true"></canvas><span>2</span></button></li>
-                <li><button type="button" class="thumb" data-page="2"><canvas width="72" height="96" aria-hidden="true"></canvas><span>3</span></button></li>
-              </ol>
-              <div class="desk">
-                <div class="dock" role="toolbar" aria-label="Tools" data-i18n-label="toolsLabel" data-dock>
-                  <div class="dock-group">
-                    <button type="button" class="tool" data-tool="pen" aria-pressed="true" title="Pen" data-i18n-label="penTool"><svg class="icon" aria-hidden="true"><use href="#i-pen-line"/></svg></button>
-                    <button type="button" class="tool" data-tool="pencil" aria-pressed="false" title="Pencil" data-i18n-label="pencilTool"><svg class="icon" aria-hidden="true"><use href="#i-pencil"/></svg></button>
-                    <button type="button" class="tool" data-tool="highlighter" aria-pressed="false" title="Highlighter" data-i18n-label="highlighterTool"><svg class="icon" aria-hidden="true"><use href="#i-highlighter"/></svg></button>
-                    <button type="button" class="tool" data-tool="eraser" aria-pressed="false" title="Eraser" data-i18n-label="eraserTool"><svg class="icon" aria-hidden="true"><use href="#i-eraser"/></svg></button>
-                  </div>
-                  <div class="dock-group">
-                    <button type="button" class="tool" data-undo disabled title="Undo" data-i18n-label="undo"><svg class="icon" aria-hidden="true"><use href="#i-undo-2"/></svg></button>
-                    <button type="button" class="tool" data-redo disabled title="Redo" data-i18n-label="redo"><svg class="icon" aria-hidden="true"><use href="#i-redo-2"/></svg></button>
-                  </div>
-                  <div class="dock-group swatches" role="radiogroup" aria-label="Ink color" data-i18n-label="inkLabel" data-swatches>
+            <div class="desk" data-desk>
+              <div class="dock" role="toolbar" aria-label="Tools" data-i18n-label="toolsLabel" data-dock>
+                <span class="dock-lane">
+                <button type="button" class="tool" data-tool="pen" aria-pressed="true" title="Pen" data-i18n-label="penTool"><svg class="icon" aria-hidden="true"><use href="#i-pen-line"/></svg></button>
+                <button type="button" class="tool" data-tool="eraser" aria-pressed="false" title="Eraser" data-i18n-label="eraserTool"><svg class="icon" aria-hidden="true"><use href="#i-eraser"/></svg></button>
+                <span class="tool" aria-hidden="true"><svg class="icon"><use href="#i-lasso-select"/></svg></span>
+                <span class="dock-divider" aria-hidden="true"></span>
+                <button type="button" class="tool" data-undo disabled title="Undo" data-i18n-label="undo"><svg class="icon" aria-hidden="true"><use href="#i-undo-2"/></svg></button>
+                <button type="button" class="tool" data-redo disabled title="Redo" data-i18n-label="redo"><svg class="icon" aria-hidden="true"><use href="#i-redo-2"/></svg></button>
+                </span>
+                <span class="dock-lane">
+                <span class="dock-divider lane-break" aria-hidden="true"></span>
+                <span class="dock-group" data-pen-group>
+                  <span class="pen-settings">
+                    <button type="button" class="tool" data-pen-settings aria-expanded="false" title="Pen settings" data-i18n-label="penSettings"><svg class="icon" aria-hidden="true"><use href="#i-sliders-horizontal"/></svg></button>
+                    <span class="pen-dot" data-pen-dot aria-hidden="true"></span>
+                  </span>
+                  <span class="presets" role="radiogroup" aria-label="Pen slots" data-i18n-label="penSlots" data-presets>
+                    <button type="button" class="preset" role="radio" data-slot="standard"></button>
+                    <span class="preset-scroll" data-preset-scroll>
+                      <button type="button" class="preset" role="radio" data-slot="pen"></button>
+                      <button type="button" class="preset" role="radio" data-slot="correction"></button>
+                      <button type="button" class="preset" role="radio" data-slot="pencil"></button>
+                      <button type="button" class="preset" role="radio" data-slot="marker"></button>
+                      <span class="tool" aria-hidden="true"><svg class="icon"><use href="#i-plus"/></svg></span>
+                    </span>
+                    <span class="preset-more" aria-hidden="true"><svg class="icon"><use href="#i-chevron-right"/></svg></span>
+                  </span>
+                </span>
+                <span class="dock-group" data-eraser-group hidden>
+                  <button type="button" class="dock-text" data-footprint aria-haspopup="menu" aria-expanded="false"><span data-footprint-label>5 mm</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+                </span>
+                <span class="dock-divider" aria-hidden="true"></span>
+                <span class="tool" aria-hidden="true"><svg class="icon"><use href="#i-graduation-cap"/></svg></span>
+                <span class="dock-divider" aria-hidden="true"></span>
+                <span class="tool" aria-hidden="true"><svg class="icon"><use href="#i-zoom-in"/></svg></span>
+                <button type="button" class="tool" data-finger aria-pressed="true" title="Draw with a finger" data-i18n-label="fingerDrawing"><svg class="icon" aria-hidden="true"><use href="#i-pointer"/></svg></button>
+                <span class="tool compact-only" aria-hidden="true"><svg class="icon"><use href="#i-ellipsis"/></svg></span>
+                </span>
+                <div class="popover" data-ink-popover hidden>
+                  <div class="swatches" role="radiogroup" aria-label="Ink color" data-i18n-label="inkLabel" data-swatches>
                     <button type="button" class="swatch" role="radio" aria-checked="true" style="--ink:#18304F" data-color="#18304F" title="Blue-black" data-i18n-label="inkBlueBlack"></button>
                     <button type="button" class="swatch" role="radio" aria-checked="false" style="--ink:#0B6477" data-color="#0B6477" title="Petrol" data-i18n-label="inkPetrol"></button>
                     <button type="button" class="swatch" role="radio" aria-checked="false" style="--ink:#315FA6" data-color="#315FA6" title="Royal" data-i18n-label="inkRoyal"></button>
@@ -184,20 +227,64 @@
                     <button type="button" class="swatch" role="radio" aria-checked="false" style="--ink:#F4D864" data-color="#F4D864" title="Sunflower" data-i18n-label="inkSunflower"></button>
                   </div>
                 </div>
-                <p class="page-meta" aria-live="polite"><span data-page-label>Page 1 of 3</span> · <span class="tabular">100 %</span></p>
-                <div class="paper-wrap">
-                  <canvas class="paper" data-paper role="img" aria-label="Writable page. Draw with a mouse, finger or pen." data-i18n-label="paperLabel"></canvas>
-                  <span class="eraser-ring" data-eraser-ring aria-hidden="true"></span>
-                </div>
+              </div>
+              <div class="feed" data-feed>
+                  <article class="feed-page" data-page="0">
+                    <div class="page-header">
+                      <span class="page-position tabular" data-page-label>Page 1 of 3</span>
+                      <span class="page-zoom tabular" data-page-zoom>Zoom: 100 %</span>
+                      <span class="page-actions" aria-hidden="true">
+                        <span class="icon-button"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+                        <span class="icon-button"><svg class="icon"><use href="#i-scan"/></svg></span>
+                        <span class="icon-button"><svg class="icon"><use href="#i-ellipsis-vertical"/></svg></span>
+                      </span>
+                    </div>
+                    <div class="paper-wrap">
+                      <canvas class="paper" data-paper role="img" aria-label="Writable page. Draw with a mouse, finger or pen." data-i18n-label="paperLabel"></canvas>
+                      <span class="eraser-ring" data-eraser-ring aria-hidden="true"></span>
+                    </div>
+                  </article>
+                  <article class="feed-page" data-page="1">
+                    <div class="page-header">
+                      <span class="page-position tabular" data-page-label>Page 2 of 3</span>
+                      <span class="page-zoom tabular" data-page-zoom>Zoom: 100 %</span>
+                      <span class="page-actions" aria-hidden="true">
+                        <span class="icon-button"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+                        <span class="icon-button"><svg class="icon"><use href="#i-scan"/></svg></span>
+                        <span class="icon-button"><svg class="icon"><use href="#i-ellipsis-vertical"/></svg></span>
+                      </span>
+                    </div>
+                    <div class="paper-wrap">
+                      <canvas class="paper" data-paper role="img" aria-label="Writable page. Draw with a mouse, finger or pen." data-i18n-label="paperLabel"></canvas>
+                      <span class="eraser-ring" data-eraser-ring aria-hidden="true"></span>
+                    </div>
+                  </article>
+                  <article class="feed-page" data-page="2">
+                    <div class="page-header">
+                      <span class="page-position tabular" data-page-label>Page 3 of 3</span>
+                      <span class="page-zoom tabular" data-page-zoom>Zoom: 100 %</span>
+                      <span class="page-actions" aria-hidden="true">
+                        <span class="icon-button"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+                        <span class="icon-button"><svg class="icon"><use href="#i-scan"/></svg></span>
+                        <span class="icon-button"><svg class="icon"><use href="#i-ellipsis-vertical"/></svg></span>
+                      </span>
+                    </div>
+                    <div class="paper-wrap">
+                      <canvas class="paper" data-paper role="img" aria-label="Writable page. Draw with a mouse, finger or pen." data-i18n-label="paperLabel"></canvas>
+                      <span class="eraser-ring" data-eraser-ring aria-hidden="true"></span>
+                    </div>
+                  </article>
               </div>
             </div>
             <div class="about-scrim" data-about hidden>
               <div class="about-dialog" role="dialog" aria-modal="true" aria-labelledby="about-title">
-                <div class="about-ground"><img src="assets/lama/lama-proud.svg" alt="" width="104" height="104"></div>
-                <h3 id="about-title">NoteLama</h3>
+                <h3 id="about-title" data-i18n="aboutOpen">About NoteLama</h3>
+                <img class="about-icon" src="assets/icon-192.png?v=44404a48ba81" alt="" width="96" height="96">
+                <p class="about-name">NoteLama</p>
+                <p data-i18n="aboutVersion">In development · not yet released</p>
                 <p data-i18n="maker">by Devmil Solutions</p>
-                <p class="about-version" data-i18n="aboutVersion">In development · not yet released</p>
-                <button class="button small" type="button" data-about-close data-i18n="close">Close</button>
+                <p class="about-family" data-i18n="aboutFamily">The Lama family: ProcessLama, GitLama, ShotLama, MailLama and NoteLama.</p>
+                <div class="about-actions"><button class="button small" type="button" data-about-close data-i18n="close">Close</button></div>
               </div>
             </div>
           </div>
@@ -279,26 +366,61 @@
         </div>
         <div class="island demo reveal" style="--i:1" data-library>
           <div class="demo-bar">
-            <span class="seg" role="group" aria-label="Sort books" data-i18n-label="sortLabel">
-              <button type="button" aria-pressed="true" data-sort="recent" data-i18n="sortRecent">Recent</button>
-              <button type="button" aria-pressed="false" data-sort="title" data-i18n="sortTitle">Title</button>
-            </span>
             <button type="button" class="button small quiet" data-restore hidden>
               <svg class="icon" aria-hidden="true"><use href="#i-archive-restore"/></svg><span data-restore-label>Restore</span>
             </button>
+            <span class="library-tools">
+              <button type="button" class="icon-button" data-sort-button aria-haspopup="menu" aria-expanded="false" title="Sort by" data-i18n-label="sortLabel"><svg class="icon" aria-hidden="true"><use href="#i-history" data-sort-icon/></svg></button>
+              <span class="icon-button" aria-hidden="true"><svg class="icon"><use href="#i-list"/></svg></span>
+            </span>
           </div>
           <ul class="shelf" data-shelf>
-            <li class="book-item" data-book-id="biology" data-recent="1"><div class="cover" style="--cover:#CFE3D8"><span class="cover-title" data-i18n="book1">Biology</span><span class="cover-meta" data-i18n="book1Meta">24 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
-            <li class="book-item" data-book-id="recipes" data-recent="4"><div class="cover" style="--cover:#F2D6D2"><span class="cover-title" data-i18n="book2">Recipes</span><span class="cover-meta" data-i18n="book2Meta">9 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
-            <li class="book-item" data-book-id="garden" data-recent="2"><div class="cover" style="--cover:#F1E6B8"><span class="cover-title" data-i18n="book3">Garden plans</span><span class="cover-meta" data-i18n="book3Meta">6 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
-            <li class="book-item" data-book-id="meetings" data-recent="3"><div class="cover" style="--cover:#CFE0EE"><span class="cover-title" data-i18n="book4">Meetings</span><span class="cover-meta" data-i18n="book4Meta">41 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
-            <li class="book-item" data-book-id="travel" data-recent="5"><div class="cover" style="--cover:#DEDAF0"><span class="cover-title" data-i18n="book5">Travel sketches</span><span class="cover-meta" data-i18n="book5Meta">13 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
-            <li class="book-item" data-book-id="ideas" data-recent="6"><div class="cover" style="--cover:#E4E0D8"><span class="cover-title" data-i18n="book6">Ideas</span><span class="cover-meta" data-i18n="book6Meta">3 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
+            <li class="book-item" data-book-id="biology" data-recent="1" data-modified="2026-10-02">
+              <div class="cover" style="--cover:#CFE3D8" aria-hidden="true"><span class="cover-title" data-i18n="book1">Biology</span></div>
+              <div class="book-label">
+                <span class="book-text"><strong class="book-name" data-i18n="book1">Biology</strong><small class="book-date" data-book-date></small></span>
+                <button type="button" class="icon-button" data-book-menu aria-haspopup="menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-ellipsis-vertical"/></svg></button>
+              </div>
+            </li>
+            <li class="book-item" data-book-id="recipes" data-recent="4" data-modified="2026-09-21">
+              <div class="cover" style="--cover:#F2D6D2" aria-hidden="true"><span class="cover-title" data-i18n="book2">Recipes</span></div>
+              <div class="book-label">
+                <span class="book-text"><strong class="book-name" data-i18n="book2">Recipes</strong><small class="book-date" data-book-date></small></span>
+                <button type="button" class="icon-button" data-book-menu aria-haspopup="menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-ellipsis-vertical"/></svg></button>
+              </div>
+            </li>
+            <li class="book-item" data-book-id="garden" data-recent="2" data-modified="2026-09-30">
+              <div class="cover" style="--cover:#F1E6B8" aria-hidden="true"><span class="cover-title" data-i18n="book3">Garden plans</span></div>
+              <div class="book-label">
+                <span class="book-text"><strong class="book-name" data-i18n="book3">Garden plans</strong><small class="book-date" data-book-date></small></span>
+                <button type="button" class="icon-button" data-book-menu aria-haspopup="menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-ellipsis-vertical"/></svg></button>
+              </div>
+            </li>
+            <li class="book-item" data-book-id="meetings" data-recent="3" data-modified="2026-10-03">
+              <div class="cover" style="--cover:#CFE0EE" aria-hidden="true"><span class="cover-title" data-i18n="book4">Meetings</span></div>
+              <div class="book-label">
+                <span class="book-text"><strong class="book-name" data-i18n="book4">Meetings</strong><small class="book-date" data-book-date></small></span>
+                <button type="button" class="icon-button" data-book-menu aria-haspopup="menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-ellipsis-vertical"/></svg></button>
+              </div>
+            </li>
+            <li class="book-item" data-book-id="travel" data-recent="5" data-modified="2026-08-14">
+              <div class="cover" style="--cover:#DEDAF0" aria-hidden="true"><span class="cover-title" data-i18n="book5">Travel sketches</span></div>
+              <div class="book-label">
+                <span class="book-text"><strong class="book-name" data-i18n="book5">Travel sketches</strong><small class="book-date" data-book-date></small></span>
+                <button type="button" class="icon-button" data-book-menu aria-haspopup="menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-ellipsis-vertical"/></svg></button>
+              </div>
+            </li>
+            <li class="book-item" data-book-id="ideas" data-recent="6" data-modified="2026-07-30">
+              <div class="cover" style="--cover:#E4E0D8" aria-hidden="true"><span class="cover-title" data-i18n="book6">Ideas</span></div>
+              <div class="book-label">
+                <span class="book-text"><strong class="book-name" data-i18n="book6">Ideas</strong><small class="book-date" data-book-date></small></span>
+                <button type="button" class="icon-button" data-book-menu aria-haspopup="menu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#i-ellipsis-vertical"/></svg></button>
+              </div>
+            </li>
           </ul>
           <div class="empty-state" data-empty hidden>
-            <span class="lama-tile"><img src="assets/lama/lama-resting.svg" alt="" width="72" height="72"></span>
-            <p class="empty-title" data-i18n="emptyTitle">No notebooks yet.</p>
-            <p data-i18n="emptyBody">Start one for ideas, sketches and the things you want to keep.</p>
+            <img class="empty-icon" src="assets/icon-192.png?v=44404a48ba81" alt="" width="48" height="48">
+            <p data-i18n="emptyTitle">Your library is empty. Create your first book.</p>
           </div>
           <p class="demo-note" role="status" data-library-status data-i18n="libraryNote">A model, not the app. Sort the books, or move one to the Trash.</p>
         </div>
@@ -352,6 +474,7 @@
             <polygon class="scan-shadow" data-scan-shadow points=""/>
             <polygon class="scan-paper" data-scan-paper points=""/>
             <g class="scan-lines" data-scan-lines></g>
+            <polygon class="scan-outline-edge" data-scan-outline-edge points=""/>
             <polygon class="scan-outline" data-scan-outline points=""/>
             <g data-scan-handles></g>
           </svg>
