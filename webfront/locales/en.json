@@ -1,6 +1,6 @@
 {
-  "title": "Nibluma · Your notebooks. Your storage.",
-  "description": "Nibluma is an offline notebook app in development for iPad and Android tablets, with reading and editing on phones.",
+  "title": "NoteLama · Your notebooks. Your storage.",
+  "description": "NoteLama is an offline notebook app in development for iPad and Android tablets, with reading and editing on phones.",
   "skip": "Skip to content",
   "language": "Language",
   "status": "In development",
@@ -14,8 +14,11 @@
   "scanBody": "Scan a document or bring in a photo, then add notes directly on the page.",
   "storageTitle": "Keep your own copy",
   "storageBody": "Work offline. Optional sync is planned through iCloud on Apple, Google Drive on Android and Nextcloud on both.",
-  "note": "Nibluma is not available for download yet. This page describes the planned app.",
-  "footer": "Nibluma · A notebook, wherever you need it.",
+  "note": "NoteLama is not available for download yet. This page describes the planned app.",
+  "footer": "NoteLama · A notebook, wherever you need it.",
   "scriptNotice": "JavaScript enables the language switch. The English page is available without it.",
-  "languageError": "The language could not be loaded. Please try again."
+  "languageError": "The language could not be loaded. Please try again.",
+  "maker": "by Devmil Solutions",
+  "family": "The Lama family",
+  "contact": "Contact and legal notice"
 }

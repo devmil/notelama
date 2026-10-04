@@ -20,7 +20,7 @@ async function setLanguage(language) {
     languageSelect.value = language;
     currentLanguage = language;
     languageError.hidden = true;
-    try { localStorage.setItem("nibluma.language", language); } catch (_) { /* Storage is optional. */ }
+    try { localStorage.setItem("notelama.language", language); } catch (_) { /* Storage is optional. */ }
   } catch (_) {
     if (request !== revision) return;
     languageSelect.value = currentLanguage;
@@ -32,5 +32,5 @@ async function setLanguage(language) {
 }
 languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
 let preferred = navigator.language.toLowerCase().startsWith("de") ? "de" : "en";
-try { preferred = localStorage.getItem("nibluma.language") || preferred; } catch (_) { /* Storage is optional. */ }
+try { preferred = localStorage.getItem("notelama.language") || preferred; } catch (_) { /* Storage is optional. */ }
 setLanguage(preferred);

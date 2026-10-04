@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title">
-  <title id="title">Nibluma mark</title>
-  <rect x="32" y="32" width="960" height="960" rx="304" fill="#18304f"/>
-  <path d="M304 688V368h112v64c64-112 272-96 272 80v176H576V512c0-96-160-80-160 16v160" fill="#fff"/>
-  <path d="M272 784h480" fill="none" stroke="#fff" stroke-width="32" stroke-linecap="round"/>
-</svg>

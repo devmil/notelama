@@ -1,6 +1,6 @@
 {
-  "title": "Nibluma · Deine Notizbücher. Dein Speicher.",
-  "description": "Nibluma ist eine Offline-Notizbuch-App in Entwicklung für iPad und Android-Tablets, mit Lesen und Bearbeiten auf dem Smartphone.",
+  "title": "NoteLama · Deine Notizbücher. Dein Speicher.",
+  "description": "NoteLama ist eine Offline-Notizbuch-App in Entwicklung für iPad und Android-Tablets, mit Lesen und Bearbeiten auf dem Smartphone.",
   "skip": "Zum Inhalt",
   "language": "Sprache",
   "status": "In Entwicklung",
@@ -14,8 +14,11 @@
   "scanBody": "Dokumente scannen oder Fotos hinzufügen und direkt auf der Seite Notizen machen.",
   "storageTitle": "Deine eigene Kopie",
   "storageBody": "Offline arbeiten. Optional ist Synchronisierung über iCloud auf Apple-Geräten, Google Drive auf Android und Nextcloud auf beiden Plattformen geplant.",
-  "note": "Nibluma ist noch nicht zum Download verfügbar. Diese Seite beschreibt die geplante App.",
-  "footer": "Nibluma · Ein Notizbuch, wo du es brauchst.",
+  "note": "NoteLama ist noch nicht zum Download verfügbar. Diese Seite beschreibt die geplante App.",
+  "footer": "NoteLama · Ein Notizbuch, wo du es brauchst.",
   "scriptNotice": "JavaScript aktiviert die Sprachauswahl. Die englische Seite ist auch ohne JavaScript verfügbar.",
-  "languageError": "Die Sprache konnte nicht geladen werden. Bitte versuche es erneut."
+  "languageError": "Die Sprache konnte nicht geladen werden. Bitte versuche es erneut.",
+  "maker": "by Devmil Solutions",
+  "family": "Die Lama-Familie",
+  "contact": "Kontakt und Impressum"
 }
