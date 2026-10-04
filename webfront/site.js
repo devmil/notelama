@@ -1,13 +1,14 @@
 "use strict";
 const languageSelect = document.querySelector("#language");
 const languageError = document.querySelector("#language-error");
+const localeVersion = document.querySelector('script[src*="site.js"]').dataset.localesVersion;
 let revision = 0;
 let currentLanguage = "en";
 async function setLanguage(language) {
   if (!["en", "de"].includes(language)) language = "en";
   const request = ++revision;
   try {
-    const response = await fetch(`locales/${language}.json`);
+    const response = await fetch(`locales/${language}.json?v=${localeVersion}`);
     if (!response.ok) throw new Error("Language unavailable");
     const strings = await response.json();
     if (request !== revision) return;

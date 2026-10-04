@@ -2,8 +2,8 @@
   "name": "NoteLama",
   "short_name": "NoteLama",
   "icons": [
-    {"src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png"}
+    {"src": "assets/icon-192.png?v=03754c927f26", "sizes": "192x192", "type": "image/png"},
+    {"src": "assets/icon-512.png?v=519073368b3c", "sizes": "512x512", "type": "image/png"}
   ],
   "theme_color": "#18304f",
   "background_color": "#f8fafb",
