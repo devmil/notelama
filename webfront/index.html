@@ -3,64 +3,471 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="NoteLama is an offline notebook app in development for iPad and Android tablets, with reading and editing on phones.">
-  <meta name="theme-color" content="#f8fafb">
+  <title>NoteLama · Handwritten notebooks for tablets and phones</title>
+  <meta name="description" content="NoteLama is a notebook app for handwriting and scanned paper on iPad, Android tablets and phones. It works offline, without an account. In development.">
+  <meta name="author" content="Devmil Solutions">
+  <meta name="theme-color" content="#ECEAE6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#151412" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
   <meta property="og:title" content="NoteLama · Your notebooks. Your storage.">
-  <meta property="og:description" content="NoteLama is an offline notebook app in development for iPad and Android tablets, with reading and editing on phones.">
-  <meta property="og:image" content="https://devmil.de/notelama/assets/feature-graphic.png?v=f44f2f4d9fd3">
+  <meta property="og:description" content="Handwritten notebooks for iPad, Android tablets and phones. Offline first, no account, optional sync with your own storage.">
+  <meta property="og:image" content="https://devmil.de/notelama/assets/feature-graphic.png?v=cb223b7f4d21">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="500">
   <meta property="og:url" content="https://devmil.de/notelama/">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://devmil.de/notelama/">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"NoteLama","url":"https://devmil.de/notelama/","applicationCategory":"ProductivityApplication","operatingSystem":"iOS, iPadOS, Android","creator":{"@type":"Organization","name":"Devmil Solutions"},"description":"Offline notebooks for handwriting and scanned documents. In development."}</script>
-  <title>NoteLama · Your notebooks. Your storage.</title>
-  <link rel="icon" href="assets/notelama-mark.svg?v=98c3dba5315a" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=9055273fc4f9">
-  <link rel="manifest" href="manifest.json?v=3411bf2ecfa4">
-  <link rel="stylesheet" href="styles.css?v=f85879c6157d">
-  <script src="site.js?v=50f00df01b90" data-locales-version="80f2fab0e89e" defer></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"NoteLama","url":"https://devmil.de/notelama/","applicationCategory":"ProductivityApplication","operatingSystem":"iOS, iPadOS, Android","creator":{"@type":"Organization","name":"Devmil Solutions","url":"https://devmil.de/"},"description":"Offline notebooks for handwriting and scanned documents. In development."}</script>
+  <link rel="icon" href="assets/notelama-mark.svg?v=741d6896531a" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=fbb6b276c877">
+  <link rel="manifest" href="manifest.json?v=1ab2ebc813e4">
+  <link rel="preload" href="assets/fonts/Literata-Display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=d50cc5a12090">
+  <script>document.documentElement.classList.add("js");</script>
+  <script src="site.js?v=645aad67fbd0" data-locales-version="3dd27c2680d1" defer></script>
 </head>
 <body>
-  <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+  <!-- Icons: Lucide (lucide-static 1.37.0, ISC), the set Meridian ships in the app. -->
+  <svg class="icon-sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-pen-line" viewBox="0 0 24 24"><path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+    <symbol id="i-highlighter" viewBox="0 0 24 24"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></symbol>
+    <symbol id="i-eraser" viewBox="0 0 24 24"><path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21"/><path d="m5.082 11.09 8.828 8.828"/></symbol>
+    <symbol id="i-undo-2" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></symbol>
+    <symbol id="i-redo-2" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/></symbol>
+    <symbol id="i-lasso-select" viewBox="0 0 24 24"><path d="M7 22a5 5 0 0 1-2-4"/><path d="M7 16.93c.96.43 1.96.74 2.99.91"/><path d="M3.34 14A6.8 6.8 0 0 1 2 10c0-4.42 4.48-8 10-8s10 3.58 10 8a7.19 7.19 0 0 1-.33 2"/><path d="M5 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/><path d="M14.33 22h-.09a.35.35 0 0 1-.24-.32v-10a.34.34 0 0 1 .33-.34c.08 0 .15.03.21.08l7.34 6a.33.33 0 0 1-.21.59h-4.49l-2.57 3.85a.35.35 0 0 1-.28.14z"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></symbol>
+    <symbol id="i-file-output" viewBox="0 0 24 24"><path d="M4.226 20.925A2 2 0 0 0 6 22h12a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v3.127"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="m5 11-3 3"/><path d="m5 17-3-3h10"/></symbol>
+    <symbol id="i-hard-drive" viewBox="0 0 24 24"><path d="M10 16h.01"/><path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><path d="M21.946 12.013H2.054"/><path d="M6 16h.01"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></symbol>
+    <symbol id="i-cloud-check" viewBox="0 0 24 24"><path d="m17 15-5.5 5.5L9 18"/><path d="M5.516 16.07A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 3.501 7.327"/></symbol>
+    <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></symbol>
+    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-notebook-pen" viewBox="0 0 24 24"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/></symbol>
+    <symbol id="i-library" viewBox="0 0 24 24"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></symbol>
+    <symbol id="i-zoom-in" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="11" x2="11" y1="8" y2="14"/><line x1="8" x2="14" y1="11" y2="11"/></symbol>
+    <symbol id="i-image-plus" viewBox="0 0 24 24"><path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></symbol>
+    <symbol id="i-languages" viewBox="0 0 24 24"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></symbol>
+    <symbol id="i-smartphone" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+    <symbol id="i-trash-2" viewBox="0 0 24 24"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-refresh-cw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+    <symbol id="i-layout-template" viewBox="0 0 24 24"><rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/></symbol>
+    <symbol id="i-graduation-cap" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-ellipsis" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-archive-restore" viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h2"/><path d="M20 8v11a2 2 0 0 1-2 2h-2"/><path d="m9 15 3-3 3 3"/><path d="M12 12v9"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
   <header class="site-header">
-    <a class="brand" href="./" aria-label="NoteLama">
-      <img class="brand-mark" src="assets/notelama-mark.svg?v=98c3dba5315a" alt="" width="48" height="48">
-      <span>NoteLama</span>
-    </a>
-    <label class="language"><span data-i18n="language">Language</span>
-      <select id="language"><option value="en">English</option><option value="de">Deutsch</option></select>
-    </label>
+    <nav class="site-nav" aria-label="Main" data-i18n-label="navLabel">
+      <a class="brand" href="./">
+        <img class="brand-mark" src="assets/notelama-mark.svg?v=741d6896531a" alt="" width="28" height="28">
+        <span class="brand-name">NoteLama</span>
+      </a>
+      <div class="nav-links">
+        <a href="#write" data-i18n="navWrite">Try the pen</a>
+        <a href="#features" data-i18n="navFeatures">Features</a>
+        <a href="#storage" data-i18n="navStorage">Storage</a>
+        <a class="nav-cta" href="#status" data-i18n="navStatus">Status</a>
+      </div>
+      <label class="language">
+        <svg class="icon" aria-hidden="true"><use href="#i-languages"/></svg>
+        <span class="sr-only" data-i18n="language">Language</span>
+        <select id="language"><option value="en">English</option><option value="de">Deutsch</option></select>
+      </label>
+    </nav>
   </header>
+
   <main id="main">
-    <section class="intro" aria-labelledby="headline">
-      <div class="intro-copy">
-        <p class="eyebrow" data-i18n="status">In development</p>
-        <h1 id="headline" data-i18n="headline">Your notebooks. Your storage.</h1>
-        <p class="lead" data-i18n="intro">A notebook app for handwritten ideas and the paper you want to keep. Designed for iPad and Android tablets, with your phone close at hand.</p>
-      </div>
-      <div class="feature-graphic" aria-hidden="true">
-        <img src="assets/feature-graphic.svg?v=64cbcedaff0b" alt="" width="1024" height="500">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="stage">
+        <canvas class="ink-field" data-ink-field aria-hidden="true"></canvas>
+        <div class="stage-veil" aria-hidden="true"></div>
+        <div class="hero-copy">
+          <p class="eyebrow on-brand"><span data-i18n="heroEyebrow">Handwritten notebooks</span> <span class="eyebrow-maker" data-i18n="maker">by Devmil Solutions</span></p>
+          <h1 id="hero-title"><span data-i18n="heroTitleA">Your notebooks.</span> <span class="soft" data-i18n="heroTitleB">Your storage.</span></h1>
+          <p class="lede" data-i18n="heroLede">NoteLama is a notebook for handwritten ideas and the paper you want to keep. Write with a pen on iPad and Android tablets, read and edit on your phone. Everything works offline, without an account.</p>
+          <div class="actions">
+            <a class="button primary" href="#write">
+              <svg class="icon" aria-hidden="true"><use href="#i-pen-line"/></svg>
+              <span data-i18n="heroTry">Try the pen</span>
+            </a>
+            <a class="button ghost" href="#features">
+              <span data-i18n="heroMore">What it does</span>
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
+          </div>
+          <ul class="hero-facts">
+            <li><span class="dot" aria-hidden="true"></span><span data-i18n="factStatus">In development</span></li>
+            <li data-i18n="factDevices">iPad, Android, phones</li>
+            <li data-i18n="factOffline">Offline first</li>
+            <li data-i18n="factLanguages">English + Deutsch</li>
+          </ul>
+        </div>
+        <!-- The Lama stands on an open notebook, as in the app icon. It
+             opens with the hello pose, settles proud, and nods when a line
+             of handwriting is finished on the stage. -->
+        <div class="hero-scene" aria-hidden="true">
+          <!-- Same geometry as the vendored app icon scene (tile-nibluma.svg). -->
+          <svg viewBox="6 10 108 104" focusable="false">
+            <path class="book-shadow" d="M18 110Q60 118 102 110"/>
+            <path class="book" d="M14 82Q37 72 60 82Q83 72 106 82V106Q83 96 60 106Q37 96 14 106Z"/>
+            <path class="book-rule" d="M23 94Q37.5 89 52 95M23 101Q37.5 96 52 102M68 94Q82.5 89 97 95M68 101Q82.5 96 97 102"/>
+            <path class="book-spine" d="M60 82V106"/>
+            <g class="hero-lama is-hello" data-hero-lama>
+              <image class="pose proud" href="assets/lama/lama-proud.svg" x="24.49" y="14.69" width="71.02" height="71.02"/>
+              <image class="pose hello" href="assets/lama/lama-standing-nod.svg" x="24.49" y="14.69" width="71.02" height="71.02"/>
+            </g>
+          </svg>
+        </div>
       </div>
     </section>
-    <section class="scope" aria-labelledby="scope-heading">
-      <p class="eyebrow" data-i18n="scopeEyebrow">Made for real notebooks</p>
-      <h2 id="scope-heading" data-i18n="scope">What we are building</h2>
-      <div class="features">
-        <article><span aria-hidden="true">01</span><h3 data-i18n="writeTitle">Space to write</h3><p data-i18n="writeBody">Organize books, write with a pen, zoom into details and undo a mistake. Read and edit on your phone, too.</p></article>
-        <article><span aria-hidden="true">02</span><h3 data-i18n="scanTitle">Paper belongs here, too</h3><p data-i18n="scanBody">Scan a document or bring in a photo, then add notes directly on the page.</p></article>
-        <article><span aria-hidden="true">03</span><h3 data-i18n="storageTitle">Keep your own copy</h3><p data-i18n="storageBody">Work offline. Optional sync is planned through iCloud on Apple, Google Drive on Android and Nextcloud on both.</p></article>
+
+    <section id="write" class="section" aria-labelledby="write-title">
+      <div class="section-head reveal">
+        <p class="eyebrow"><b>01</b> / <span data-i18n="writeEyebrow">The book</span></p>
+        <h2 id="write-title"><span data-i18n="writeTitleA">Open a book.</span> <span class="soft" data-i18n="writeTitleB">The pen is ready.</span></h2>
+        <p class="section-lede" data-i18n="writeLede">A sketch of the tablet editor, built for this page. Write on the paper with a mouse, a finger or a pen. Switch tools in the dock, undo, redo, or open another page.</p>
+      </div>
+
+      <figure class="tablet-figure reveal" data-book>
+        <div class="tablet">
+          <div class="app" data-sketch-theme>
+            <div class="app-bar">
+              <span class="app-icon-button" aria-hidden="true"><svg class="icon"><use href="#i-chevron-left"/></svg></span>
+              <div class="app-title">
+                <strong class="book-title" data-i18n="bookTitle">Field notes</strong>
+                <small class="save-state" data-save-state role="status"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-save-text data-i18n="savedLocally">Saved on this device</span></small>
+              </div>
+              <span class="app-icon-button" aria-hidden="true"><svg class="icon"><use href="#i-plus"/></svg></span>
+              <span class="app-icon-button" aria-hidden="true"><svg class="icon"><use href="#i-ellipsis"/></svg></span>
+              <button class="app-icon-button signature-button" type="button" data-about-open title="About NoteLama" data-i18n-label="aboutOpen">
+                <span class="signature" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="app-body">
+              <ol class="thumbs" aria-label="Pages" data-i18n-label="pagesLabel" data-thumbs>
+                <li><button type="button" class="thumb" data-page="0" aria-current="true"><canvas width="72" height="96" aria-hidden="true"></canvas><span>1</span></button></li>
+                <li><button type="button" class="thumb" data-page="1"><canvas width="72" height="96" aria-hidden="true"></canvas><span>2</span></button></li>
+                <li><button type="button" class="thumb" data-page="2"><canvas width="72" height="96" aria-hidden="true"></canvas><span>3</span></button></li>
+              </ol>
+              <div class="desk">
+                <div class="dock" role="toolbar" aria-label="Tools" data-i18n-label="toolsLabel" data-dock>
+                  <div class="dock-group">
+                    <button type="button" class="tool" data-tool="pen" aria-pressed="true" title="Pen" data-i18n-label="penTool"><svg class="icon" aria-hidden="true"><use href="#i-pen-line"/></svg></button>
+                    <button type="button" class="tool" data-tool="pencil" aria-pressed="false" title="Pencil" data-i18n-label="pencilTool"><svg class="icon" aria-hidden="true"><use href="#i-pencil"/></svg></button>
+                    <button type="button" class="tool" data-tool="highlighter" aria-pressed="false" title="Highlighter" data-i18n-label="highlighterTool"><svg class="icon" aria-hidden="true"><use href="#i-highlighter"/></svg></button>
+                    <button type="button" class="tool" data-tool="eraser" aria-pressed="false" title="Eraser" data-i18n-label="eraserTool"><svg class="icon" aria-hidden="true"><use href="#i-eraser"/></svg></button>
+                  </div>
+                  <div class="dock-group">
+                    <button type="button" class="tool" data-undo disabled title="Undo" data-i18n-label="undo"><svg class="icon" aria-hidden="true"><use href="#i-undo-2"/></svg></button>
+                    <button type="button" class="tool" data-redo disabled title="Redo" data-i18n-label="redo"><svg class="icon" aria-hidden="true"><use href="#i-redo-2"/></svg></button>
+                  </div>
+                  <div class="dock-group swatches" role="radiogroup" aria-label="Ink color" data-i18n-label="inkLabel" data-swatches>
+                    <button type="button" class="swatch" role="radio" aria-checked="true" style="--ink:#18304F" data-color="#18304F" title="Blue-black" data-i18n-label="inkBlueBlack"></button>
+                    <button type="button" class="swatch" role="radio" aria-checked="false" style="--ink:#0B6477" data-color="#0B6477" title="Petrol" data-i18n-label="inkPetrol"></button>
+                    <button type="button" class="swatch" role="radio" aria-checked="false" style="--ink:#315FA6" data-color="#315FA6" title="Royal" data-i18n-label="inkRoyal"></button>
+                    <button type="button" class="swatch" role="radio" aria-checked="false" style="--ink:#943A55" data-color="#943A55" title="Berry" data-i18n-label="inkBerry"></button>
+                    <button type="button" class="swatch" role="radio" aria-checked="false" style="--ink:#444B55" data-color="#444B55" title="Graphite" data-i18n-label="inkGraphite"></button>
+                    <button type="button" class="swatch" role="radio" aria-checked="false" style="--ink:#F4D864" data-color="#F4D864" title="Sunflower" data-i18n-label="inkSunflower"></button>
+                  </div>
+                </div>
+                <p class="page-meta" aria-live="polite"><span data-page-label>Page 1 of 3</span> · <span class="tabular">100 %</span></p>
+                <div class="paper-wrap">
+                  <canvas class="paper" data-paper role="img" aria-label="Writable page. Draw with a mouse, finger or pen." data-i18n-label="paperLabel"></canvas>
+                  <span class="eraser-ring" data-eraser-ring aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+            <div class="about-scrim" data-about hidden>
+              <div class="about-dialog" role="dialog" aria-modal="true" aria-labelledby="about-title">
+                <div class="about-ground"><img src="assets/lama/lama-proud.svg" alt="" width="104" height="104"></div>
+                <h3 id="about-title">NoteLama</h3>
+                <p data-i18n="maker">by Devmil Solutions</p>
+                <p class="about-version" data-i18n="aboutVersion">In development · not yet released</p>
+                <button class="button small" type="button" data-about-close data-i18n="close">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption class="figure-caption">
+          <span data-i18n="writeCaption">A sketch, not the app. Nothing you draw leaves this page. The small Lama in the top bar opens About.</span>
+          <span class="seg" role="group" aria-label="Sketch appearance" data-i18n-label="appearanceLabel">
+            <button type="button" aria-pressed="false" data-sketch-mode="light" data-i18n="light">Light</button>
+            <button type="button" aria-pressed="false" data-sketch-mode="dark" data-i18n="dark">Dark</button>
+          </span>
+        </figcaption>
+        <p class="figure-note reveal" data-i18n="writeNote">Paper and ink are content, so they keep their colors in dark appearance.</p>
+      </figure>
+    </section>
+
+    <section id="features" class="section" aria-labelledby="features-title">
+      <div class="section-head reveal">
+        <p class="eyebrow"><b>02</b> / <span data-i18n="featuresEyebrow">Features</span></p>
+        <h2 id="features-title"><span data-i18n="featuresTitleA">Made for real notebooks.</span> <span class="soft" data-i18n="featuresTitleB">And the paper around them.</span></h2>
+        <p class="section-lede" data-i18n="featuresLede">Everything below works on the device, without a connection.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="island reveal">
+          <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-library"/></svg></span>
+          <h3 data-i18n="fLibraryTitle">Books and folders</h3>
+          <p data-i18n="fLibraryBody">Give each book a cover and its own paper. Sort, search, archive, and keep folders one level deep. Deleted books wait in the Trash for 30 days.</p>
+        </article>
+        <article class="island reveal" style="--i:1">
+          <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-pen-line"/></svg></span>
+          <h3 data-i18n="fPensTitle">Pens that feel right</h3>
+          <p data-i18n="fPensBody">A steady pen, a pressure pen, a textured pencil and a highlighter. Save your favorite pens with their own color and width.</p>
+        </article>
+        <article class="island reveal" style="--i:2">
+          <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-layout-template"/></svg></span>
+          <h3 data-i18n="fPaperTitle">Paper to choose</h3>
+          <p data-i18n="fPaperBody">Blank, ruled, squared, dotted or Cornell paper, in white or cream, A4 or Letter, portrait or landscape. Change it per page.</p>
+        </article>
+        <article class="island reveal">
+          <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-zoom-in"/></svg></span>
+          <h3 data-i18n="fZoomTitle">Zoom writing</h3>
+          <p data-i18n="fZoomBody">Write large in a magnified area while small, neat lines appear on the page. It moves along the line as you go.</p>
+        </article>
+        <article class="island reveal" style="--i:1">
+          <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-lasso-select"/></svg></span>
+          <h3 data-i18n="fSelectTitle">Select and shapes</h3>
+          <p data-i18n="fSelectBody">Lasso handwriting to move, resize, rotate or recolor it. Draw clean lines, rectangles, ellipses and triangles.</p>
+        </article>
+        <article class="island reveal" style="--i:2">
+          <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-image-plus"/></svg></span>
+          <h3 data-i18n="fStickerTitle">Stickers</h3>
+          <p data-i18n="fStickerBody">Place stickers from the built-in catalog or your own photos, then arrange them with your ink.</p>
+        </article>
+        <article class="island reveal">
+          <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-undo-2"/></svg></span>
+          <h3 data-i18n="fUndoTitle">Undo across the book</h3>
+          <p data-i18n="fUndoBody">Undo and redo follow your changes through the whole book, whichever page you are looking at.</p>
+        </article>
+        <article class="island reveal" style="--i:1">
+          <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-file-output"/></svg></span>
+          <h3 data-i18n="fExportTitle">PDF and backups</h3>
+          <p data-i18n="fExportBody">Export pages or a whole book as a PDF. An editable backup keeps strokes, scans and paper, ready to import again.</p>
+        </article>
+        <article class="island reveal" style="--i:2">
+          <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-languages"/></svg></span>
+          <h3 data-i18n="fAccessTitle">Two languages, two looks</h3>
+          <p data-i18n="fAccessBody">English and German, light and dark appearance, large text up to 200 % and full keyboard and screen reader labels.</p>
+        </article>
+      </div>
+
+      <div class="story" id="library">
+        <div class="story-copy reveal">
+          <p class="eyebrow" data-i18n="libraryEyebrow">The library</p>
+          <h3 class="story-title" data-i18n="libraryTitle">Books you can tell apart</h3>
+          <p data-i18n="libraryBody">Covers come in calm colors with a spine, so you find a book at a glance. Reopening a book takes you back to the page you left.</p>
+          <ul class="ticks">
+            <li data-i18n="libraryTick1">Sort by recently opened, modified or title.</li>
+            <li data-i18n="libraryTick2">The Trash keeps deleted books, with their pages, for 30 days.</li>
+          </ul>
+        </div>
+        <div class="island demo reveal" style="--i:1" data-library>
+          <div class="demo-bar">
+            <span class="seg" role="group" aria-label="Sort books" data-i18n-label="sortLabel">
+              <button type="button" aria-pressed="true" data-sort="recent" data-i18n="sortRecent">Recent</button>
+              <button type="button" aria-pressed="false" data-sort="title" data-i18n="sortTitle">Title</button>
+            </span>
+            <button type="button" class="button small quiet" data-restore hidden>
+              <svg class="icon" aria-hidden="true"><use href="#i-archive-restore"/></svg><span data-restore-label>Restore</span>
+            </button>
+          </div>
+          <ul class="shelf" data-shelf>
+            <li class="book-item" data-book-id="biology" data-recent="1"><div class="cover" style="--cover:#CFE3D8"><span class="cover-title" data-i18n="book1">Biology</span><span class="cover-meta" data-i18n="book1Meta">24 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
+            <li class="book-item" data-book-id="recipes" data-recent="4"><div class="cover" style="--cover:#F2D6D2"><span class="cover-title" data-i18n="book2">Recipes</span><span class="cover-meta" data-i18n="book2Meta">9 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
+            <li class="book-item" data-book-id="garden" data-recent="2"><div class="cover" style="--cover:#F1E6B8"><span class="cover-title" data-i18n="book3">Garden plans</span><span class="cover-meta" data-i18n="book3Meta">6 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
+            <li class="book-item" data-book-id="meetings" data-recent="3"><div class="cover" style="--cover:#CFE0EE"><span class="cover-title" data-i18n="book4">Meetings</span><span class="cover-meta" data-i18n="book4Meta">41 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
+            <li class="book-item" data-book-id="travel" data-recent="5"><div class="cover" style="--cover:#DEDAF0"><span class="cover-title" data-i18n="book5">Travel sketches</span><span class="cover-meta" data-i18n="book5Meta">13 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
+            <li class="book-item" data-book-id="ideas" data-recent="6"><div class="cover" style="--cover:#E4E0D8"><span class="cover-title" data-i18n="book6">Ideas</span><span class="cover-meta" data-i18n="book6Meta">3 pages</span></div><button type="button" class="cover-trash" data-trash title="Move to Trash" data-i18n-label="moveToTrash"><svg class="icon" aria-hidden="true"><use href="#i-trash-2"/></svg></button></li>
+          </ul>
+          <div class="empty-state" data-empty hidden>
+            <span class="lama-tile"><img src="assets/lama/lama-resting.svg" alt="" width="72" height="72"></span>
+            <p class="empty-title" data-i18n="emptyTitle">No notebooks yet.</p>
+            <p data-i18n="emptyBody">Start one for ideas, sketches and the things you want to keep.</p>
+          </div>
+          <p class="demo-note" role="status" data-library-status data-i18n="libraryNote">A model, not the app. Sort the books, or move one to the Trash.</p>
+        </div>
+      </div>
+
+      <div class="story flip" id="study">
+        <div class="story-copy reveal">
+          <p class="eyebrow" data-i18n="studyEyebrow">Study tape</p>
+          <h3 class="story-title" data-i18n="studyTitle">Cover the answer. Test yourself.</h3>
+          <p data-i18n="studyBody">Lay tape over your own notes, then tap a strip in study mode to check what is underneath. Reveals reset when you close the book.</p>
+          <ul class="ticks">
+            <li data-i18n="studyTick1">A PDF can keep the tape on, or show the answers.</li>
+            <li data-i18n="studyTick2">Tape is a study aid, not a way to hide private content.</li>
+          </ul>
+        </div>
+        <div class="island demo reveal" style="--i:1" data-study>
+          <div class="demo-bar">
+            <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-graduation-cap"/></svg><span data-i18n="studyMode">Study</span></span>
+            <button type="button" class="button small quiet" data-hide-all disabled>
+              <svg class="icon" aria-hidden="true"><use href="#i-eye-off"/></svg><span data-i18n="hideAll">Hide all</span>
+            </button>
+          </div>
+          <div class="study-page">
+            <p class="study-head" data-i18n="studyHeading">Capitals</p>
+            <ul class="study-list">
+              <li><span data-i18n="q1">Canada</span><button type="button" class="tape" aria-pressed="false" data-tape style="--r:-1.2deg"><span class="answer" data-i18n="a1">Ottawa</span></button></li>
+              <li><span data-i18n="q2">Australia</span><button type="button" class="tape" aria-pressed="false" data-tape style="--r:0.8deg"><span class="answer" data-i18n="a2">Canberra</span></button></li>
+              <li><span data-i18n="q3">Brazil</span><button type="button" class="tape" aria-pressed="false" data-tape style="--r:-0.4deg"><span class="answer" data-i18n="a3">Brasília</span></button></li>
+              <li><span data-i18n="q4">Turkey</span><button type="button" class="tape" aria-pressed="false" data-tape style="--r:1.4deg"><span class="answer" data-i18n="a4">Ankara</span></button></li>
+              <li><span data-i18n="q5">New Zealand</span><button type="button" class="tape" aria-pressed="false" data-tape style="--r:-0.9deg"><span class="answer" data-i18n="a5">Wellington</span></button></li>
+            </ul>
+          </div>
+          <p class="demo-note" role="status" data-study-status>A model, not the app. Tap a strip to reveal it.</p>
+        </div>
+      </div>
+
+      <div class="story" id="scan">
+        <div class="story-copy reveal">
+          <p class="eyebrow" data-i18n="scanEyebrow">Scanning</p>
+          <h3 class="story-title" data-i18n="scanTitle">Paper belongs in the book, too</h3>
+          <p data-i18n="scanBody">Scan a handout or bring in a photo. NoteLama finds the edges, straightens the page and adds it to your book, ready for notes on top.</p>
+          <ul class="ticks">
+            <li data-i18n="scanTick1">Move any corner by hand, rotate, or choose color or grayscale.</li>
+            <li data-i18n="scanTick2">The scan stays as it was; your ink lies on top and can be erased.</li>
+          </ul>
+        </div>
+        <div class="island demo reveal" style="--i:1" data-scan>
+          <svg class="scan-view" viewBox="0 0 400 300" role="group" aria-label="Scan review model" data-i18n-label="scanLabel">
+            <rect class="scan-desk" width="400" height="300"/>
+            <path class="scan-grain" d="M0 40C120 30 260 52 400 38M0 120C140 110 250 130 400 116M0 210C120 200 280 222 400 206M0 280C140 270 250 292 400 276"/>
+            <polygon class="scan-shadow" data-scan-shadow points=""/>
+            <polygon class="scan-paper" data-scan-paper points=""/>
+            <g class="scan-lines" data-scan-lines></g>
+            <polygon class="scan-outline" data-scan-outline points=""/>
+            <g data-scan-handles></g>
+          </svg>
+          <div class="demo-bar bottom">
+            <button type="button" class="button small quiet" data-scan-reset>
+              <svg class="icon" aria-hidden="true"><use href="#i-rotate-ccw"/></svg><span data-i18n="scanRetake">Retake</span>
+            </button>
+            <button type="button" class="button small primary" data-scan-accept>
+              <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="scanAccept">Add page</span>
+            </button>
+          </div>
+          <p class="demo-note" role="status" data-scan-status>A model, not the app. Drag a corner, or focus it and use the arrow keys.</p>
+        </div>
       </div>
     </section>
-    <aside class="notice">
-      <img src="assets/notelama-mark.svg?v=98c3dba5315a" alt="" width="52" height="52">
-      <p data-i18n="note">NoteLama is not available for download yet. This page describes the planned app.</p>
-    </aside>
-    <p id="language-error" role="status" hidden></p>
-    <noscript data-i18n="scriptNotice">JavaScript enables the language switch. The English page is available without it.</noscript>
+
+    <section id="storage" class="section" aria-labelledby="storage-title">
+      <div class="section-head reveal">
+        <p class="eyebrow"><b>03</b> / <span data-i18n="storageEyebrow">Storage</span></p>
+        <h2 id="storage-title"><span data-i18n="storageTitleA">Saved on this device first.</span> <span class="soft" data-i18n="storageTitleB">Your cloud, if you want one.</span></h2>
+        <p class="section-lede" data-i18n="storageLede">Every finished stroke is saved on the device within a moment. Sync is optional and uses storage you already have. There is no NoteLama account and no NoteLama server.</p>
+      </div>
+      <div class="sync island reveal" data-sync>
+        <div class="sync-controls">
+          <span class="seg" role="group" aria-label="Storage provider" data-i18n-label="providerLabel">
+            <button type="button" aria-pressed="true" data-provider="none" data-i18n="providerNone">This device only</button>
+            <button type="button" aria-pressed="false" data-provider="icloud">iCloud</button>
+            <button type="button" aria-pressed="false" data-provider="drive">Google Drive</button>
+            <button type="button" aria-pressed="false" data-provider="nextcloud">Nextcloud</button>
+          </span>
+          <label class="switch">
+            <input type="checkbox" data-offline>
+            <span class="switch-track" aria-hidden="true"></span>
+            <svg class="icon" aria-hidden="true"><use href="#i-wifi-off"/></svg>
+            <span data-i18n="offline">Offline</span>
+          </label>
+        </div>
+        <div class="sync-diagram">
+          <div class="sync-node device">
+            <span class="node-icon"><svg class="icon" aria-hidden="true"><use href="#i-notebook-pen"/></svg></span>
+            <strong data-i18n="thisDevice">This tablet</strong>
+            <canvas class="mini-page" width="220" height="120" data-mini-page aria-hidden="true"></canvas>
+            <button type="button" class="button small" data-write-line>
+              <svg class="icon" aria-hidden="true"><use href="#i-pen-line"/></svg><span data-i18n="writeLine">Write a line</span>
+            </button>
+          </div>
+          <div class="sync-link" data-sync-link aria-hidden="true"><span class="packet" data-packet></span></div>
+          <div class="sync-node cloud" data-cloud-node>
+            <span class="node-icon"><svg class="icon" aria-hidden="true"><use href="#i-cloud"/></svg></span>
+            <strong data-provider-name data-i18n="providerOff">No provider</strong>
+            <span class="node-note" data-provider-note data-i18n="providerOffNote">Notebooks stay on this device.</span>
+          </div>
+        </div>
+        <div class="sync-status">
+          <span class="status-chip" data-sync-status role="status"><span class="dot" aria-hidden="true"></span><span data-sync-text>Saved on this device</span></span>
+        </div>
+      </div>
+      <dl class="facts">
+        <div class="island reveal">
+          <dt><svg class="icon" aria-hidden="true"><use href="#i-hard-drive"/></svg><span data-i18n="fact1Title">Local first</span></dt>
+          <dd data-i18n="fact1Body">Writing never waits for the network. If saving fails, NoteLama says so and keeps your work until it can save.</dd>
+        </div>
+        <div class="island reveal" style="--i:1">
+          <dt><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg><span data-i18n="fact2Title">No account</span></dt>
+          <dd data-i18n="fact2Body">iCloud on Apple devices, Google Drive on Android, Nextcloud on both. You sign in to your provider, never to us.</dd>
+        </div>
+        <div class="island reveal" style="--i:2">
+          <dt><svg class="icon" aria-hidden="true"><use href="#i-shield-check"/></svg><span data-i18n="fact3Title">Nothing lost</span></dt>
+          <dd data-i18n="fact3Body">When two devices changed the same book, both versions are kept for you to compare. No analytics, no tracking.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section id="status" class="section" aria-labelledby="status-title">
+      <div class="status-stage reveal">
+        <span class="status-lama" aria-hidden="true"><img src="assets/lama/lama-standing.svg" alt="" width="128" height="128"></span>
+        <div class="status-copy">
+          <p class="eyebrow on-brand"><b>04</b> / <span data-i18n="statusEyebrow">Status</span></p>
+          <h2 id="status-title" data-i18n="statusTitle">Not available for download yet</h2>
+          <p data-i18n="statusBody">NoteLama is in development and in testing on real tablets and phones. This page will link to the App Store and Google Play when it is ready.</p>
+        </div>
+      </div>
+      <div class="platform-grid">
+        <article class="island platform reveal">
+          <div class="platform-head">
+            <span class="platform-icon"><svg class="icon" aria-hidden="true"><use href="#i-pen-line"/></svg></span>
+            <div><h3 data-i18n="appleTitle">iPad and iPhone</h3><p data-i18n="appleSub">iPadOS and iOS</p></div>
+            <span class="chip accent" data-i18n="inTesting">In testing</span>
+          </div>
+          <p data-i18n="appleBody">Apple Pencil on compatible iPads, finger writing everywhere. Optional sync with iCloud or Nextcloud.</p>
+        </article>
+        <article class="island platform reveal" style="--i:1">
+          <div class="platform-head">
+            <span class="platform-icon"><svg class="icon" aria-hidden="true"><use href="#i-smartphone"/></svg></span>
+            <div><h3 data-i18n="androidTitle">Android tablets and phones</h3><p data-i18n="androidSub">Android</p></div>
+            <span class="chip accent" data-i18n="inTesting">In testing</span>
+          </div>
+          <p data-i18n="androidBody">Active pens on supported tablets, finger writing everywhere. Optional sync with Google Drive or Nextcloud.</p>
+        </article>
+      </div>
+    </section>
+
+    <p id="language-error" class="language-error" role="status" hidden></p>
+    <noscript><p class="language-error" data-i18n="scriptNotice">JavaScript enables the language switch and the interactive models. The English page is readable without it.</p></noscript>
   </main>
-  <footer><p data-i18n="footer">NoteLama · A notebook, wherever you need it.</p>
-    <p data-i18n="maker">by Devmil Solutions</p>
-    <nav aria-label="Devmil"><a href="https://devmil.de/projects/" data-i18n="family">The Lama family</a> · <a href="https://devmil.de/imprint/" data-i18n="contact">Contact and legal notice</a></nav>
+
+  <footer class="site-footer">
+    <div class="footer-brand">
+      <span class="signature" aria-hidden="true"></span>
+      <div><strong>NoteLama</strong><p data-i18n="footer">A notebook, wherever you need it. By Devmil Solutions.</p></div>
+    </div>
+    <nav aria-label="Devmil" class="footer-links">
+      <a href="https://devmil.de/projects/" data-i18n="family">The Lama family</a>
+      <a href="https://devmil.de/imprint/" data-i18n="contact">Contact and legal notice</a>
+    </nav>
+    <p class="footer-note" data-i18n="noTracking">No analytics. No cookies. Your language choice stays in this browser.</p>
   </footer>
 </body>
 </html>

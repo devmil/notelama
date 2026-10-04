@@ -2,10 +2,10 @@
   "name": "NoteLama",
   "short_name": "NoteLama",
   "icons": [
-    {"src": "assets/icon-192.png?v=03754c927f26", "sizes": "192x192", "type": "image/png"},
-    {"src": "assets/icon-512.png?v=519073368b3c", "sizes": "512x512", "type": "image/png"}
+    {"src": "assets/icon-192.png?v=44404a48ba81", "sizes": "192x192", "type": "image/png"},
+    {"src": "assets/icon-512.png?v=4cd5277dc8cf", "sizes": "512x512", "type": "image/png"}
   ],
-  "theme_color": "#18304f",
-  "background_color": "#f8fafb",
+  "theme_color": "#0B6477",
+  "background_color": "#ECEAE6",
   "display": "standalone"
 }
