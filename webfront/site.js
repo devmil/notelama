@@ -275,6 +275,29 @@
     reduced.addEventListener("change", wake);
     setTimeout(() => pose(false), reduced.matches ? 0 : 1400);
     rest = 0.6;
+
+    /* Between lines the Lama gets up to things of its own (lama-antics.js,
+       from the brand repository). Tapping it plays a gag; one of them is a
+       scribble: it hops and a fresh line of handwriting starts on the ink
+       field at once, unless a line is already being written. */
+    if (window.LamaAntics) {
+      LamaAntics.attach(lama, {
+        base: "assets/lama/",
+        colors: ["#5CC0CF", "#CFEFF3", "#FFF8EB"],
+        taps: {
+          scribble: async (antic) => {
+            await antic.move("bigHop");
+            if (!antic.live()) return;
+            antic.bits("puff", 5, antic.FEET, { angle: Math.PI, spread: Math.PI, reach: 26, size: 7, duration: 650, color: "#5CC0CF" });
+            if (current || reduced.matches) return;
+            current = newLine();
+            current.accent = true;
+            antic.bits("spark", 4, antic.HEAD, { angle: Math.PI, spread: 0.7, reach: 50, size: 7, duration: 800, color: "#5CC0CF" });
+            wake();
+          },
+        },
+      });
+    }
   }
 
   // ── Menus ───────────────────────────────────────────────────────────
