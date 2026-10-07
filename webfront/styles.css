@@ -254,6 +254,11 @@ h1 .soft { display: block; color: var(--brand-accent); }
 .book-rule { fill: none; stroke: #0B6477; stroke-opacity: 0.55; stroke-width: 2.4; stroke-linecap: round; }
 .book-spine { stroke: #0B6477; stroke-width: 3.5; stroke-linecap: round; }
 .book-shadow { fill: none; stroke: rgba(0, 0, 0, 0.28); stroke-width: 4; stroke-linecap: round; filter: blur(1.5px); }
+/* The book keeps the handwriting from the stage (site.js). Its right page
+   turns over the spine when the spread is full. */
+.book-ink path { fill: none; stroke: #0B6477; stroke-width: 0.95; stroke-linecap: round; stroke-linejoin: round; }
+.book-page { opacity: 0; transform-box: view-box; transform-origin: 60px 94px; }
+.book-drops circle { fill: #5CC0CF; }
 .hero-lama { transform-box: view-box; transform-origin: 60px 80px; }
 .hero-lama .pose { transition: opacity 0.28s var(--ease); }
 .hero-lama .pose.hello { opacity: 0; }

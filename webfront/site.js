@@ -198,6 +198,11 @@
     function settle() {
       for (let i = 0; i < 5; i += 1) lines.push(newLine(3 + i * 2));
       draw();
+      if (!ink.childNodes.length) {
+        writeOn(0, true);
+        writeOn(1, true);
+        written = 2;
+      }
     }
 
     function draw() {
@@ -234,6 +239,175 @@
       }
     }
 
+    /* The notebook under the Lama keeps what is written. Each finished
+       line sends a few drops of ink into the book, where a short line of
+       handwriting writes itself onto the next free rule. A full spread
+       turns its page: the page sweeps up under the Lama, which hops over
+       it. While a line is being written, the Lama turns to watch the pen. */
+    const NS = "http://www.w3.org/2000/svg";
+    const scene = lama.ownerSVGElement;
+    const RULES = [[23, 94, 37.5, 89, 52, 95], [23, 101, 37.5, 96, 52, 102], [68, 94, 82.5, 89, 97, 95], [68, 101, 82.5, 96, 97, 102]];
+    const svgNode = (name, attributes) => {
+      const node = document.createElementNS(NS, name);
+      Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
+      return node;
+    };
+    const ink = svgNode("g", { class: "book-ink" });
+    const page = svgNode("g", { class: "book-page" });
+    page.append(
+      svgNode("path", { class: "book", d: "M60 82Q83 72 106 82V106Q83 96 60 106Z" }),
+      svgNode("path", { class: "book-rule", d: "M68 94Q82.5 89 97 95M68 101Q82.5 96 97 102" }),
+    );
+    const drops = svgNode("g", { class: "book-drops" });
+    // The turning page lifts toward the reader, so it passes in front of
+    // the Lama's legs.
+    scene.insertBefore(ink, lama);
+    scene.insertBefore(drops, lama);
+    scene.append(page);
+    let written = 0;
+    let turning = false;
+    let antics = null;
+    const fixed = (value) => value.toFixed(2);
+
+    function pathOf(points) {
+      let d = `M${fixed(points[0][0])} ${fixed(points[0][1])}`;
+      for (let i = 1; i < points.length - 1; i += 1) {
+        d += `Q${fixed(points[i][0])} ${fixed(points[i][1])} ${fixed((points[i][0] + points[i + 1][0]) / 2)} ${fixed((points[i][1] + points[i + 1][1]) / 2)}`;
+      }
+      const end = points[points.length - 1];
+      return `${d}L${fixed(end[0])} ${fixed(end[1])}`;
+    }
+
+    /* Handwriting along a rule, just above its curve. */
+    function writeOn(slot, instant) {
+      const [x0, y0, cx, cy, x1, y1] = RULES[slot];
+      const curve = (x) => {
+        const t = Math.min(1, Math.max(0, (x - x0) / (x1 - x0)));
+        return (1 - t) * (1 - t) * y0 + 2 * t * (1 - t) * cy + t * t * y1;
+      };
+      const strokes = scribble(random(Math.floor(Math.random() * 1e9)), x0 + 1.5, 0, (x1 - x0 - 3) * (0.55 + Math.random() * 0.4), 2.2);
+      let delay = 0;
+      for (const points of strokes) {
+        const path = svgNode("path", { d: pathOf(points.map(([x, y]) => [x, y + curve(x) - 1.7])) });
+        path.dataset.slot = String(slot);
+        ink.append(path);
+        if (instant) continue;
+        const length = path.getTotalLength();
+        const duration = length * 9;
+        path.style.strokeDasharray = `${length}`;
+        path.animate([{ strokeDashoffset: length }, { strokeDashoffset: 0 }], { duration, delay, easing: "linear", fill: "backwards" });
+        delay += duration + 60;
+      }
+      return delay;
+    }
+
+    /* Drops of ink from the end of a line (canvas pixels) into the book. */
+    function dropInk(tip, slot) {
+      const matrix = scene.getScreenCTM();
+      if (!matrix) return Promise.resolve();
+      const box = canvas.getBoundingClientRect();
+      const from = new DOMPoint(box.left + tip[0], box.top + tip[1]).matrixTransform(matrix.inverse());
+      const [x0, y0, , , x1] = RULES[slot];
+      const to = { x: x0 + (x1 - x0) * 0.3, y: y0 - 2 };
+      const lift = Math.min(from.y, to.y) - 30;
+      const flights = [];
+      for (let i = 0; i < 4; i += 1) {
+        const drop = svgNode("circle", { r: String(1.9 - i * 0.25) });
+        drops.append(drop);
+        const frames = [];
+        for (let step = 0; step <= 16; step += 1) {
+          const t = step / 16;
+          const x = (1 - t) * (1 - t) * from.x + 2 * t * (1 - t) * ((from.x + to.x) / 2) + t * t * (to.x + i * 2.4);
+          const y = (1 - t) * (1 - t) * from.y + 2 * t * (1 - t) * lift + t * t * to.y;
+          frames.push({ transform: `translate(${fixed(x)}px, ${fixed(y)}px) scale(${t > 0.85 ? (1 - t) * 6 : 1})` });
+        }
+        flights.push(drop.animate(frames, { duration: 900, delay: i * 70, easing: "cubic-bezier(.4,0,.6,1)", fill: "backwards" })
+          .finished.catch(() => {}).then(() => drop.remove()));
+      }
+      return Promise.all(flights);
+    }
+
+    /* The right page lifts toward the reader, crosses the spine and lands
+       on the left page, which starts a fresh spread. */
+    const TURN_MS = 1200;
+    function turnPage() {
+      turning = true;
+      ink.querySelectorAll('[data-slot="2"], [data-slot="3"]').forEach((node) => node.remove());
+      const frames = [];
+      for (let step = 0; step <= 16; step += 1) {
+        const angle = (step / 16) * Math.PI;
+        frames.push({
+          opacity: 1,
+          transform: `translate(0px, ${fixed(-18 * Math.sin(angle))}px) scale(${fixed(Math.cos(angle))}, 1)`,
+        });
+      }
+      return page.animate(frames, { duration: TURN_MS, easing: "ease-in-out" }).finished.catch(() => {}).then(() => {
+        ink.textContent = "";
+        written = 0;
+        turning = false;
+      });
+    }
+
+    /* The Lama hops as the page passes under it, halfway through the turn. */
+    function hopThePage() {
+      if (!antics || antics.busy() === "tap") return;
+      antics.react(async (antic) => {
+        antic.face(null);
+        antic.pose("standing");
+        await antic.jump({ lead: TURN_MS / 2 - 320, air: 640, height: 0.3, style: Math.random() < 0.3 ? "tuck" : "hop" });
+        antic.pose("hello");
+        await antic.move("dip");
+      }, "page");
+    }
+
+    function save(tip) {
+      const full = written >= RULES.length;
+      const slot = full ? 0 : written;
+      written = slot + 1;
+      if (antics && antics.busy() !== "tap") {
+        antics.face(null);
+        antics.react(async (antic) => {
+          antic.pose("hello");
+          await antic.wait(900);
+          await antic.move("dip");
+        }, "save");
+      }
+      return dropInk(tip, slot).then(() => {
+        if (!full) return writeOn(slot);
+        hopThePage();
+        return turnPage().then(() => writeOn(slot));
+      });
+    }
+
+    /* The pen's position, from the strokes drawn so far. */
+    function tipOf(line) {
+      let budget = line.drawn;
+      let tip = null;
+      for (const stroke of line.strokes) {
+        if (budget <= 1) break;
+        tip = stroke[Math.min(stroke.length, Math.floor(budget)) - 1];
+        budget -= stroke.length;
+      }
+      return tip;
+    }
+
+    let watching = null;
+    function watchPen() {
+      if (!antics) return;
+      const tip = current && tipOf(current);
+      let side = null;
+      if (tip) {
+        const box = lama.getBoundingClientRect();
+        const x = canvas.getBoundingClientRect().left + tip[0];
+        const mid = box.left + box.width * 0.5;
+        side = x > mid + box.width * 0.18 ? "right" : x < mid ? null : watching;
+      }
+      if (side !== watching) {
+        watching = side;
+        antics.face(side);
+      }
+    }
+
     function pose(hello) { lama.classList.toggle("is-hello", hello); }
     function nod() {
       pose(true);
@@ -253,15 +427,17 @@
         current.drawn += delta * 70;
         if (current.drawn >= current.total) {
           current.drawn = current.total;
+          const tip = tipOf(current);
           lines.push(current);
           current = null;
-          rest = 1.2 + rand();
-          nod();
+          rest = 1.2 + rand() + (written >= RULES.length ? 1.4 : 0);
+          if (antics && tip && !turning) save(tip); else nod();
         }
       } else if ((rest -= delta) <= 0) {
         current = newLine();
       }
       draw();
+      watchPen();
       frame = requestAnimationFrame(tick);
     }
     function wake() {
@@ -281,10 +457,21 @@
        scribble: it hops and a fresh line of handwriting starts on the ink
        field at once, unless a line is already being written. */
     if (window.LamaAntics) {
-      LamaAntics.attach(lama, {
+      antics = LamaAntics.attach(lama, {
         base: "assets/lama/",
         colors: ["#5CC0CF", "#CFEFF3", "#FFF8EB"],
         taps: {
+          /* It turns the page itself: a stomp, and the page goes over. */
+          page: async (antic) => {
+            if (turning || antic.reduced()) {
+              await antic.move("hop");
+              return;
+            }
+            await antic.move("plop");
+            antic.bits("puff", 4, antic.FEET, { angle: Math.PI, spread: Math.PI, reach: 22, size: 6, duration: 600, color: "#5CC0CF" });
+            turnPage();
+            await antic.jump({ lead: TURN_MS / 2 - 320, air: 640, height: 0.3, style: "spin" });
+          },
           scribble: async (antic) => {
             await antic.move("bigHop");
             if (!antic.live()) return;
