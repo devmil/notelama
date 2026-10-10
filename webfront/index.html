@@ -23,11 +23,11 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=fbb6b276c877">
   <link rel="manifest" href="manifest.json?v=1ab2ebc813e4">
   <link rel="preload" href="assets/fonts/Literata-Display.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=ec73af354eca">
+  <link rel="stylesheet" href="styles.css?v=3857734846e7">
   <link rel="stylesheet" href="assets/lama/lama-antics.css?v=926d01e9bae2">
   <script>document.documentElement.classList.add("js");</script>
   <script src="assets/lama/lama-antics.js?v=fd9d7d8235fa" defer></script>
-  <script src="site.js?v=f9de41178c36" data-locales-version="d9de96ee4395" defer></script>
+  <script src="site.js?v=ebbeec97b6ee" data-locales-version="a36721fcf605" defer></script>
 </head>
 <body>
   <!-- Icons: Lucide (lucide-static 1.37.0, ISC), the set Meridian ships in the app. -->
@@ -95,11 +95,11 @@
         <a href="#storage" data-i18n="navStorage">Storage</a>
         <a class="nav-cta" href="#status" data-i18n="navStatus">Status</a>
       </div>
-      <label class="language">
+      <div class="language language-switch" role="group" aria-label="Language" data-i18n-label="language">
         <svg class="icon" aria-hidden="true"><use href="#i-languages"/></svg>
-        <span class="sr-only" data-i18n="language">Language</span>
-        <select id="language"><option value="en">English</option><option value="de">Deutsch</option></select>
-      </label>
+        <button type="button" data-language="en" lang="en" aria-pressed="true" title="English">EN</button>
+        <button type="button" data-language="de" lang="de" aria-pressed="false" title="Deutsch">DE</button>
+      </div>
     </nav>
   </header>
 
@@ -590,7 +590,8 @@
     </div>
     <nav aria-label="Devmil" class="footer-links">
       <a href="https://devmil.de/projects/" data-i18n="family">The Lama family</a>
-      <a href="https://devmil.de/imprint/" data-i18n="contact">Contact and legal notice</a>
+      <a href="imprint.html" data-legal="imprint" data-i18n="imprint">Imprint</a>
+      <a href="privacy.html" data-legal="privacy" data-i18n="privacy">Privacy</a>
     </nav>
     <p class="footer-note" data-i18n="noTracking">No analytics. No cookies. Your language choice stays in this browser.</p>
   </footer>

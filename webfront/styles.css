@@ -161,9 +161,15 @@ button, select, input { font: inherit; color: inherit; }
   display: inline-flex; align-items: center; gap: 6px;
   color: var(--ink-muted); padding-left: 10px; border-left: 1px solid var(--line-strong);
 }
-.language select {
-  min-height: 36px; padding: 4px 8px; border-radius: var(--radius-sm);
-  border: 1px solid var(--line-strong); background: var(--pane); color: var(--ink);
+.language-switch button, .language-switch a {
+  display: inline-grid; place-items: center; min-width: 36px; min-height: 36px; padding: 0 8px;
+  border: 0; border-radius: var(--radius-sm); background: transparent;
+  color: var(--ink-muted); font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+  text-decoration: none; cursor: pointer;
+}
+.language-switch button:hover, .language-switch a:hover { color: var(--ink); background: var(--ground-hover); }
+.language-switch [aria-pressed="true"], .language-switch [aria-current="page"] {
+  color: var(--ink); background: var(--pane-alt); box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 
 /* Buttons and small controls */
@@ -634,6 +640,17 @@ button.tool:hover:not(:disabled) { background: var(--s-pane-hover); color: var(-
 .platform-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--pane-alt); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink-muted); }
 .platform > p { margin: 14px 0 0; font-size: 15px; }
 .language-error { max-width: var(--max); margin: 24px auto 0; padding: 0 var(--gutter); color: var(--ink-muted); }
+
+/* Legal pages */
+.legal { max-width: calc(70ch + 2 * var(--gutter)); margin: 0 auto; padding: clamp(32px, 6vw, 64px) var(--gutter) 0; }
+.legal h1 { color: var(--ink); font-size: clamp(30px, 8vw, 52px); line-height: 1.1; }
+.legal h1, .legal h2, .legal h3 { overflow-wrap: break-word; hyphens: auto; }
+.legal h2 { margin: 40px 0 8px; font-size: 24px; line-height: 1.25; }
+.legal h3 { margin: 24px 0 6px; font-size: 17px; }
+.legal p, .legal li { color: var(--ink-muted); overflow-wrap: anywhere; }
+.legal ul { padding-left: 22px; }
+.legal address { font-style: normal; color: var(--ink-muted); }
+.legal .updated { margin-top: 12px; font-size: 14px; color: var(--ink-faint); }
 
 /* Footer */
 .site-footer {

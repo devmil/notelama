@@ -1,7 +1,8 @@
 // Page behaviour for the NoteLama landing page: the language switch, the
 // ink field and Lama on the hero stage, and the small models of the book,
 // library, study tape, scan review and storage. Nothing is stored or sent;
-// only the language choice is kept in localStorage when it is available.
+// only the language choice is kept in localStorage (preferred-language) when
+// it is available. Legal pages use only the contact and language parts.
 "use strict";
 (() => {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -9,8 +10,64 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
+  // ── Contact address ─────────────────────────────────────────────────
+  // The address is never written out in the page. The link assembles it from
+  // the data attributes only when it is clicked; the visible text stays as is.
+  for (const element of $$(".contact-email")) {
+    const link = document.createElement("a");
+    link.href = "#";
+    link.textContent = element.textContent;
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      const data = element.dataset;
+      window.location.href = "mail" + "to:" + data.user + "@" + data.domain + "." + data.tld;
+    });
+    element.replaceChildren(link);
+  }
+
+  // ── Language preference ─────────────────────────────────────────────
+  // All Devmil sites share one origin and one key, so a choice made on one
+  // Lama site carries over to the others. The former NoteLama key is moved
+  // over once.
+  const languageKey = "preferred-language";
+  const legacyLanguageKey = "notelama.language";
+  const supported = (value) => value === "en" || value === "de";
+  function storedLanguage() {
+    try {
+      let value = localStorage.getItem(languageKey);
+      const legacy = localStorage.getItem(legacyLanguageKey);
+      if (legacy !== null) {
+        if (!supported(value) && supported(legacy)) {
+          value = legacy;
+          localStorage.setItem(languageKey, legacy);
+        }
+        localStorage.removeItem(legacyLanguageKey);
+      }
+      return supported(value) ? value : null;
+    } catch (_) { return null; /* Storage is optional. */ }
+  }
+  function storeLanguage(language) {
+    try { localStorage.setItem(languageKey, language); } catch (_) { /* Storage is optional. */ }
+  }
+
+  // ── Header ──────────────────────────────────────────────────────────
+  const header = $(".site-header");
+  const onScroll = () => header.classList.toggle("scrolled", window.scrollY > 8);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Legal pages are separate files per language. Their switch is a pair of
+  // links to the counterpart page; it only records the choice.
+  if (document.body.dataset.page === "legal") {
+    storedLanguage();
+    $$(".language-switch a[data-language]").forEach((link) => {
+      link.addEventListener("click", () => storeLanguage(link.dataset.language));
+    });
+    return;
+  }
+
   // ── Language ────────────────────────────────────────────────────────
-  const languageSelect = $("#language");
+  const languageButtons = $$(".language-switch button[data-language]");
   const languageError = $("#language-error");
   const localeVersion = $('script[src*="site.js"]').dataset.localesVersion;
   let strings = null;
@@ -26,10 +83,14 @@
     listeners.push(listener);
     if (strings) listener();
   }
+  function showLanguage(language) {
+    languageButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.language === language)));
+  }
 
-  async function setLanguage(language) {
-    if (!["en", "de"].includes(language)) language = "en";
+  async function setLanguage(language, remember) {
+    if (!supported(language)) language = "en";
     const request = ++revision;
+    showLanguage(language);
     try {
       const response = await fetch(`locales/${language}.json?v=${localeVersion}`);
       if (!response.ok) throw new Error("Language unavailable");
@@ -42,27 +103,30 @@
         element.setAttribute("aria-label", label);
         if (element.hasAttribute("title")) element.title = label;
       });
+      // Legal links work without script; here they follow the shown language.
+      $$("a[data-legal]").forEach((link) => {
+        link.href = `${language === "de" ? "de/" : ""}${link.dataset.legal}.html`;
+      });
       document.title = strings.title;
       $('meta[name="description"]').content = strings.description;
       document.documentElement.lang = language;
-      languageSelect.value = language;
       currentLanguage = language;
       languageError.hidden = true;
       listeners.forEach((listener) => listener());
-      try { localStorage.setItem("notelama.language", language); } catch (_) { /* Storage is optional. */ }
+      if (remember) storeLanguage(language);
     } catch (_) {
       if (request !== revision) return;
-      languageSelect.value = currentLanguage;
+      showLanguage(currentLanguage);
       languageError.textContent = currentLanguage === "de"
-        ? "Die Sprache konnte nicht geladen werden. Bitte versuche es erneut."
+        ? "Die Sprache konnte nicht geladen werden. Bitte versuchen Sie es erneut."
         : "The language could not be loaded. Please try again.";
       languageError.hidden = false;
     }
   }
-  languageSelect.addEventListener("change", (event) => setLanguage(event.target.value));
-  let preferred = navigator.language.toLowerCase().startsWith("de") ? "de" : "en";
-  try { preferred = localStorage.getItem("notelama.language") || preferred; } catch (_) { /* Storage is optional. */ }
-  setLanguage(preferred);
+  languageButtons.forEach((button) => {
+    button.addEventListener("click", () => setLanguage(button.dataset.language, true));
+  });
+  setLanguage(storedLanguage() || (String(navigator.language || "").toLowerCase().startsWith("de") ? "de" : "en"), false);
 
   // ── Shared helpers ──────────────────────────────────────────────────
   function random(seed) {
@@ -133,11 +197,7 @@
     element.classList.add(className);
   }
 
-  // ── Header and reveals ──────────────────────────────────────────────
-  const header = $(".site-header");
-  const onScroll = () => header.classList.toggle("scrolled", window.scrollY > 8);
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
+  // ── Reveals ─────────────────────────────────────────────────────────
 
   if ("IntersectionObserver" in window && !reduced.matches) {
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
