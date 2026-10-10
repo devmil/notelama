@@ -118,7 +118,7 @@
       if (request !== revision) return;
       showLanguage(currentLanguage);
       languageError.textContent = currentLanguage === "de"
-        ? "Die Sprache konnte nicht geladen werden. Bitte versuchen Sie es erneut."
+        ? "Die Sprache konnte nicht geladen werden. Bitte versuche es erneut."
         : "The language could not be loaded. Please try again.";
       languageError.hidden = false;
     }
